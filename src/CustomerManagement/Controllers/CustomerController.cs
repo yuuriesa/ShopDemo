@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace CustomerManagement.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
-        private readonly CustomerRepository _repository;
+        private ICustomerRepository _repository;
 
-        public CustomerController(CustomerRepository repository)
+        public CustomerController(ICustomerRepository repository)
         {
             _repository = repository;
         }
