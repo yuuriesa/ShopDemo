@@ -38,6 +38,7 @@ namespace CustomerManagement.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Customer customer)
         {
+            customer.CustomerId = id;
             _repository.Update(id, customer);
 
             
