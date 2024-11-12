@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CustomerManagement.Models
+namespace CustomerManagement.DTO
 {
-    public class Customer
+    public class CustomerDto
     {
-        [Key]
-        public int CustomerId { get; set; }
         [Required(ErrorMessage = "Name is Required", AllowEmptyStrings = false)]
         public string? Name { get; set; }
         [Required(ErrorMessage = "LastName is Required", AllowEmptyStrings = false)]

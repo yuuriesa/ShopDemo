@@ -1,3 +1,4 @@
+using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,14 @@ namespace CustomerManagement.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_repository.GetAll());
+            var allCustomers = _repository.GetAll();
+
+            if (allCustomers.Count() == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(allCustomers);
         }
 
         [HttpGet("{id}")]
@@ -28,11 +36,19 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] Customer customer)
+        public IActionResult Add([FromBody] CustomerDto customer)
         {
-            _repository.Add(customer);
+            var newCustomer = new Customer
+            {
+                Name = customer.Name,
+                LastName = customer.LastName, 
+                Email = customer.Email, 
+                DateOfBirth = customer.DateOfBirth
+             };
 
-            return CreatedAtAction(nameof(GetById), new {id = customer.CustomerId}, customer);
+            _repository.Add(newCustomer);
+
+            return CreatedAtAction(nameof(GetById), new {id = newCustomer.CustomerId}, customer);
         }
 
         [HttpPut("{id}")]
