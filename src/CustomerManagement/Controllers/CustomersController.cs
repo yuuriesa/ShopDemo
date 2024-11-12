@@ -45,6 +45,13 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
+            var dateNow = DateTime.Now;
+
+            if (customer.DateOfBirth.Day > dateNow.Day)
+            {
+                return BadRequest("You cannot put the date with the day after today.");
+            }
+
             var newCustomer = new Customer
             {
                 FirstName = customer.FirstName,
