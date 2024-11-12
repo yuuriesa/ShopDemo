@@ -6,11 +6,11 @@ namespace CustomerManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private ICustomerRepository _repository;
 
-        public CustomerController(ICustomerRepository repository)
+        public CustomersController(ICustomerRepository repository)
         {
             _repository = repository;
         }
