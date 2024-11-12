@@ -47,7 +47,7 @@ namespace CustomerManagement.Controllers
         {
             var newCustomer = new Customer
             {
-                Name = customer.Name,
+                FirstName = customer.FirstName,
                 LastName = customer.LastName, 
                 Email = customer.Email, 
                 DateOfBirth = customer.DateOfBirth

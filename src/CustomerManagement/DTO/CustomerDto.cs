@@ -6,13 +6,13 @@ namespace CustomerManagement.DTO
     {
         [Required(ErrorMessage = "Name is Required", AllowEmptyStrings = false)]
         [MinLength(2, ErrorMessage = "Must Be at least 2 characters long")]
-        [MaxLength(40, ErrorMessage = "Must have a maximum of 200 characters")]
-        [RegularExpression(@"^[a-zA-Z]{2,40}$", ErrorMessage = "Characters are not allowed.")]
-        public string Name { get; set; }
+        [MaxLength(40, ErrorMessage = "Must have a maximum of 40 characters")]
+        [RegularExpression(@"^[a-zA-Z]{2,40}$")]
+        public string FirstName { get; set; }
         [Required(ErrorMessage = "LastName is Required", AllowEmptyStrings = false)]
         [MinLength(2, ErrorMessage = "Must Be at least 2 characters long")]
-        [MaxLength(40, ErrorMessage = "Must have a maximum of 200 characters")]
-        [RegularExpression(@"^[a-zA-Z]{2,40}$", ErrorMessage = "Characters are not allowed.")]
+        [MaxLength(40, ErrorMessage = "Must have a maximum of 40 characters")]
+        [RegularExpression(@"^[a-zA-Z]{2,40}$")]
         public string LastName { get; set; }
         [EmailAddress(ErrorMessage = "The Email field is not a valid e-mail address.")]
         [Required(ErrorMessage = "Email is Required")]
