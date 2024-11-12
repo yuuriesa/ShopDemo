@@ -1,4 +1,5 @@
 using CustomerManagement.Data;
+using CustomerManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CustomerManagement.Repository
@@ -28,9 +29,14 @@ namespace CustomerManagement.Repository
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll(PaginationFilter validFilter)
         {
-            return dbSetEntity.ToList();
+            var pagedData = await dbSetEntity
+                .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                .Take(validFilter.PageSize)
+                .ToListAsync();
+            
+            return pagedData;
         }
 
         public TEntity GetById(int id)

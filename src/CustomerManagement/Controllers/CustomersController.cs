@@ -17,9 +17,12 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            var allCustomers = _repository.GetAll();
+            var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
+
+            var allCustomers = await _repository.GetAll(validFilter);
+
 
             if (allCustomers.Count() == 0)
             {
@@ -62,7 +65,7 @@ namespace CustomerManagement.Controllers
 
             _repository.Add(newCustomer);
 
-            return CreatedAtAction(nameof(GetById), new {id = newCustomer.CustomerId}, customer);
+            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: customer);
         }
 
         [HttpPut("{id}")]
