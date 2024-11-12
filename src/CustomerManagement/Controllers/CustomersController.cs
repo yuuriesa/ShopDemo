@@ -32,7 +32,14 @@ namespace CustomerManagement.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            return Ok(_repository.GetById(id));
+            var findCustomer = _repository.GetById(id);
+
+            if (findCustomer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(findCustomer);
         }
 
         [HttpPost]
