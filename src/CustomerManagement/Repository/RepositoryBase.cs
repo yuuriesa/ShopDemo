@@ -34,7 +34,7 @@ namespace CustomerManagement.Repository
             var pagedData = await dbSetEntity
                 .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                 .Take(validFilter.PageSize)
-                .ToListAsync();
+                .ToListAsync(); //ajustar aqui dps
             
             return pagedData;
         }

@@ -20,6 +20,11 @@ namespace CustomerManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
         {
+            if (pageNumber < 0 || pageSize < 0)
+            {
+                return BadRequest();
+            }
+
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
             var allCustomers = await _repository.GetAll(validFilter);
