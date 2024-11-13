@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
@@ -48,9 +49,9 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
-            var dateNow = DateTime.Now;
+            var dateNow = DateTime.UtcNow;
 
-            if (customer.DateOfBirth.Day > dateNow.Day)
+            if (customer.DateOfBirth.ToUniversalTime().Date > dateNow.Date)
             {
                 return BadRequest("You cannot put the date with the day after today.");
             }
