@@ -13,6 +13,7 @@ namespace CustomerManagement.DTO
         [Required(ErrorMessage = "Email is Required")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Date of Birth is Required")]
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
     }
 }

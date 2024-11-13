@@ -15,6 +15,6 @@ namespace CustomerManagement.Models
         [Required(ErrorMessage = "Email is Required")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Date of Birth is Required")]
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
     }
 }

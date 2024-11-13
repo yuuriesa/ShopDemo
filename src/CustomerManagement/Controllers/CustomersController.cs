@@ -66,7 +66,7 @@ namespace CustomerManagement.Controllers
                 FirstName = customer.FirstName,
                 LastName = customer.LastName, 
                 Email = customer.Email, 
-                DateOfBirth = customer.DateOfBirth
+                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
              };
 
             _repository.Add(newCustomer);
