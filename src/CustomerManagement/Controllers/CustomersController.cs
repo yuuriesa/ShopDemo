@@ -61,6 +61,13 @@ namespace CustomerManagement.Controllers
                 return BadRequest("You cannot put the date with the day after today.");
             }
 
+            var findCustomerByEmail = _repository.GetByEmail(customer.Email);
+
+            if (findCustomerByEmail != null)
+            {
+                return Conflict("This email exists");
+            }
+
             var newCustomer = new Customer
             {
                 FirstName = customer.FirstName,
@@ -71,7 +78,7 @@ namespace CustomerManagement.Controllers
 
             _repository.Add(newCustomer);
 
-            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: customer);
+            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
         }
 
         [HttpPut("{id}")]
