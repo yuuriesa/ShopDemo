@@ -82,13 +82,20 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Customer customer)
+        public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
-            customer.CustomerId = id;
-            _repository.Update(id, customer);
+            var updatedCustomer = new Customer {};
+
+            updatedCustomer.CustomerId = id;
+            updatedCustomer.FirstName = customerDto.FirstName;
+            updatedCustomer.LastName = customerDto.LastName;
+            updatedCustomer.Email = customerDto.Email;
+            updatedCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
+            
+            _repository.Update(id, updatedCustomer);
 
             
-            return Ok(customer);
+            return Ok(updatedCustomer);
         }
 
         [HttpDelete("{id}")]
