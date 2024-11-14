@@ -29,12 +29,12 @@ namespace CustomerManagement.Repository
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<TEntity>> GetAll(PaginationFilter validFilter)
+        public IEnumerable<TEntity> GetAll(PaginationFilter validFilter)
         {
-            var pagedData = await dbSetEntity
+            var pagedData = dbSetEntity
                 .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                 .Take(validFilter.PageSize)
-                .ToListAsync(); //ajustar aqui dps
+                .ToArray();
             
             return pagedData;
         }

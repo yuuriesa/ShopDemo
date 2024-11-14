@@ -18,7 +18,7 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10)
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
             if (pageNumber < 0 || pageSize < 0)
             {
@@ -27,7 +27,7 @@ namespace CustomerManagement.Controllers
 
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
-            var allCustomers = await _repository.GetAll(validFilter);
+            var allCustomers = _repository.GetAll(validFilter);
 
 
             if (allCustomers.Count() == 0)
