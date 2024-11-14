@@ -84,6 +84,13 @@ namespace CustomerManagement.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
+            var findCustomer = _repository.GetById(id);
+
+            if (findCustomer == null)
+            {
+                return NotFound();
+            }
+
             var updatedCustomer = new Customer {};
 
             updatedCustomer.CustomerId = id;
@@ -101,6 +108,13 @@ namespace CustomerManagement.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            var findCustomer = _repository.GetById(id);
+
+            if (findCustomer == null)
+            {
+                return NotFound();
+            }
+
             _repository.Delete(id);
             
             
