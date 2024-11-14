@@ -91,6 +91,9 @@ namespace CustomerManagement.Controllers
                 return NotFound();
             }
 
+            _repository.DetachedCustomer(findCustomer);
+
+
             var updatedCustomer = new Customer {};
 
             updatedCustomer.CustomerId = id;

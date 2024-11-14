@@ -25,7 +25,7 @@ namespace CustomerManagement.Repository
 
         public void Delete(int id)
         {
-            dbSetEntity.Remove(dbSetEntity.Find(id));
+            dbSetEntity.Remove(dbSetEntity.Find(id)!);
             _dbContext.SaveChanges();
         }
 
@@ -41,7 +41,7 @@ namespace CustomerManagement.Repository
 
         public TEntity GetById(int id)
         {
-            return dbSetEntity.Find(id);
+            return dbSetEntity.Find(id)!;
         }
 
         public TEntity Update(int id, TEntity entity)
@@ -49,7 +49,7 @@ namespace CustomerManagement.Repository
             dbSetEntity.Update(entity);
             _dbContext.SaveChanges();
 
-            return dbSetEntity.Find(id);
+            return dbSetEntity.Find(id)!;
         }
     }
 }
