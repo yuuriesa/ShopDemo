@@ -91,6 +91,13 @@ namespace CustomerManagement.Controllers
                 return NotFound();
             }
 
+            var findCustomerByEmail = _repository.GetByEmail(customerDto.Email);
+
+            if (findCustomerByEmail != null)
+            {
+                return Conflict("This Email exists");
+            }
+
             findCustomer.CustomerId = id;
             findCustomer.FirstName = customerDto.FirstName;
             findCustomer.LastName = customerDto.LastName;
