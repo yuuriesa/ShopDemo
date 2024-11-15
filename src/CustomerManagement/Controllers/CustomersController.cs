@@ -91,21 +91,16 @@ namespace CustomerManagement.Controllers
                 return NotFound();
             }
 
-            _repository.DetachedCustomer(findCustomer);
-
-
-            var updatedCustomer = new Customer {};
-
-            updatedCustomer.CustomerId = id;
-            updatedCustomer.FirstName = customerDto.FirstName;
-            updatedCustomer.LastName = customerDto.LastName;
-            updatedCustomer.Email = customerDto.Email;
-            updatedCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
+            findCustomer.CustomerId = id;
+            findCustomer.FirstName = customerDto.FirstName;
+            findCustomer.LastName = customerDto.LastName;
+            findCustomer.Email = customerDto.Email;
+            findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
             
-            _repository.Update(id, updatedCustomer);
+            _repository.Update(id, findCustomer);
 
             
-            return Ok(updatedCustomer);
+            return Ok(findCustomer);
         }
 
         [HttpDelete("{id}")]

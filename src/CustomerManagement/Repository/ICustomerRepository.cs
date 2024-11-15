@@ -5,6 +5,5 @@ namespace CustomerManagement.Repository
     public interface ICustomerRepository : IRepositoryBase<Customer>
     {
         public Customer GetByEmail(string email);
-        public void DetachedCustomer(Customer customer);
     }
 }

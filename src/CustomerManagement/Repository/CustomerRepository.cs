@@ -27,10 +27,5 @@ namespace CustomerManagement.Repository
 
             return findCustomerByEmail;
         }
-
-        public void DetachedCustomer(Customer customer)
-        {
-            _dbContext.Customers.Entry(customer).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-        }
     }
 }
