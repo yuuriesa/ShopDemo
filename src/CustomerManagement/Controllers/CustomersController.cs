@@ -110,6 +110,47 @@ namespace CustomerManagement.Controllers
             return Ok(findCustomer);
         }
 
+        [HttpPatch("{id}")]
+        public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
+        {
+            var findCustomer = _repository.GetById(id);
+
+            if (findCustomer == null)
+            {
+                return NotFound();
+            }
+
+            if (customerPatchDto.Email != null)
+            {
+                var findCustomerByEmail = _repository.GetByEmail(customerPatchDto.Email);
+
+                if (findCustomerByEmail != null)
+                {
+                    return Conflict("This Email exists");
+                }
+
+                findCustomer.Email = customerPatchDto.Email;
+            }
+            if (customerPatchDto.FirstName != null)
+            {
+                findCustomer.FirstName = customerPatchDto.FirstName;
+            }
+            if (customerPatchDto.LastName != null)
+            {
+                findCustomer.LastName = customerPatchDto.LastName;
+            }
+            if (customerPatchDto.DateOfBirth != null)
+            {
+                findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
+            }
+
+            //findCustomer.CustomerId = id;
+            
+            _repository.Update(id, findCustomer);
+        
+            return Ok(findCustomer);
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
