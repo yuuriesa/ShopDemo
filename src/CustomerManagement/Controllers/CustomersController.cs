@@ -101,6 +101,8 @@ namespace CustomerManagement.Controllers
                 }       
             }
 
+            List<Customer> listCustomersForResponse = new List<Customer>();
+
             foreach (var customer in customers)
             {
                 var newCustomer = new Customer
@@ -112,9 +114,10 @@ namespace CustomerManagement.Controllers
                 };
 
                 _repository.Add(newCustomer);      
+                listCustomersForResponse.Add(_repository.GetByEmail(customer.Email));
             }
 
-            return Ok(customers);
+            return Created("", listCustomersForResponse);
         }
 
         [HttpPut("{id}")]
