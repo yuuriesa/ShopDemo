@@ -81,6 +81,42 @@ namespace CustomerManagement.Controllers
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
         }
 
+        [HttpPost("add-list")]
+        public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
+        {
+            var dateNow = DateTime.UtcNow;
+            
+            foreach (var customer in customers)
+            {
+                if (customer.DateOfBirth.ToUniversalTime().Date > dateNow)
+                {
+                    return BadRequest("You cannot put the date with the day after today.");
+                }
+
+                var findCustomerByEmail = _repository.GetByEmail(customer.Email);
+
+                if (findCustomerByEmail != null)
+                {
+                    return Conflict($"This email: '{customer.Email}' exists");
+                }       
+            }
+
+            foreach (var customer in customers)
+            {
+                var newCustomer = new Customer
+                {
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName, 
+                    Email = customer.Email, 
+                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
+                };
+
+                _repository.Add(newCustomer);      
+            }
+
+            return Ok(customers);
+        }
+
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
