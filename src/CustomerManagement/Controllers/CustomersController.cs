@@ -85,6 +85,17 @@ namespace CustomerManagement.Controllers
         public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {
             var dateNow = DateTime.UtcNow;
+
+            var duplicateEmails = customers
+            .GroupBy(c => c.Email)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+
+            if (duplicateEmails.Any())
+            {
+                return BadRequest($"Duplicate email(s) found in input: {string.Join(", ", duplicateEmails)}.");
+            }
             
             foreach (var customer in customers)
             {
