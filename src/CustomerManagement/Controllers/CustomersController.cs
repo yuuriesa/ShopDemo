@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
+using CustomerManagement.Services;
 using CustomerManagement.Utils;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,8 +13,6 @@ namespace CustomerManagement.Controllers
     public class CustomersController : ControllerBase
     {
         private ICustomerRepository _repository;
-
-        //
 
         public CustomersController(ICustomerRepository repository)
         {
@@ -76,11 +75,7 @@ namespace CustomerManagement.Controllers
             List<Customer> listCustomersForResponse = new List<Customer>();
             var dateNow = DateTime.UtcNow;
 
-            var duplicateEmails = customers
-            .GroupBy(c => c.Email)
-            .Where(group => group.Count() > 1)
-            .Select(group => group.Key)
-            .ToList();
+            var duplicateEmails = new CustomerServices().GetDuplicateEmails(customers: customers);
 
             if (duplicateEmails.Any())
             {
