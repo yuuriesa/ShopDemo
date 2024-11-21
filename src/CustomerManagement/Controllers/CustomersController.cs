@@ -77,6 +77,7 @@ namespace CustomerManagement.Controllers
              };
 
             _repository.Add(newCustomer);
+            _repository.SaveChanges();
 
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
         }
@@ -84,6 +85,7 @@ namespace CustomerManagement.Controllers
         [HttpPost("add-list")]
         public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {
+            List<Customer> listCustomersForResponse = new List<Customer>();
             var dateNow = DateTime.UtcNow;
 
             var duplicateEmails = customers
@@ -112,8 +114,6 @@ namespace CustomerManagement.Controllers
                 }       
             }
 
-            List<Customer> listCustomersForResponse = new List<Customer>();
-
             foreach (var customer in customers)
             {
                 var newCustomer = new Customer
@@ -125,6 +125,14 @@ namespace CustomerManagement.Controllers
                 };
 
                 _repository.Add(newCustomer);      
+            }
+            
+
+            
+            _repository.SaveChanges();
+            
+            foreach (var customer in customers)
+            {
                 listCustomersForResponse.Add(_repository.GetByEmail(customer.Email));
             }
 
@@ -160,6 +168,7 @@ namespace CustomerManagement.Controllers
             findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
             
             _repository.Update(id, findCustomer);
+            _repository.SaveChanges();
 
             
             return Ok(findCustomer);
@@ -205,6 +214,7 @@ namespace CustomerManagement.Controllers
             }
 
             _repository.Update(id, findCustomer);
+            _repository.SaveChanges();
         
             return Ok(findCustomer);
         }
@@ -220,6 +230,7 @@ namespace CustomerManagement.Controllers
             }
 
             _repository.Delete(id);
+            _repository.SaveChanges();
             
             
             return NoContent();

@@ -9,5 +9,6 @@ namespace CustomerManagement.Repository
         public TEntity Add(TEntity entity);
         public TEntity Update(int id, TEntity entity);
         public void Delete(int id);
+        public void SaveChanges();
     }
 }

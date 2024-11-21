@@ -18,7 +18,6 @@ namespace CustomerManagement.Repository
         public TEntity Add(TEntity entity)
         {
             dbSetEntity.Add(entity);
-            _dbContext.SaveChanges();
 
             return entity;
         }
@@ -26,7 +25,6 @@ namespace CustomerManagement.Repository
         public void Delete(int id)
         {
             dbSetEntity.Remove(dbSetEntity.Find(id)!);
-            _dbContext.SaveChanges();
         }
 
         public IEnumerable<TEntity> GetAll(PaginationFilter validFilter)
@@ -47,9 +45,13 @@ namespace CustomerManagement.Repository
         public TEntity Update(int id, TEntity entity)
         {
             dbSetEntity.Update(entity);
-            _dbContext.SaveChanges();
 
             return dbSetEntity.Find(id)!;
+        }
+
+        public void SaveChanges()
+        {
+            _dbContext.SaveChanges();
         }
     }
 }
