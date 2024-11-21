@@ -72,6 +72,8 @@ namespace CustomerManagement.Controllers
         [HttpPost("batch")]
         public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {
+            if (customers.Count() == 0) return NoContent();
+
             List<Customer> listCustomersForResponse = new List<Customer>();
             var dateNow = DateTime.UtcNow;
 
@@ -143,7 +145,7 @@ namespace CustomerManagement.Controllers
             findCustomer.CustomerId = id;
             findCustomer.FirstName = customerDto.FirstName;
             findCustomer.LastName = customerDto.LastName;
-            findCustomer.Email = customerDto.Email;
+            //findCustomer.Email = customerDto.Email;
             findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
             
             _repository.Update(id, findCustomer);
