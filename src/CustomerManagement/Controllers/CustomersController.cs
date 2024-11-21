@@ -89,10 +89,9 @@ namespace CustomerManagement.Controllers
             
             foreach (var customer in customers)
             {
-                if (customer.DateOfBirth.ToUniversalTime().Date > dateNow)
-                {
-                    return BadRequest("You cannot put the date with the day after today.");
-                }
+                var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customer.DateOfBirth);
+
+                if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
                 var findCustomerByEmail = _repository.GetByEmail(customer.Email);
 
