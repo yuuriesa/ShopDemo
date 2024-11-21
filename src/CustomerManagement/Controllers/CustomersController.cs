@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
+using CustomerManagement.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerManagement.Controllers
@@ -56,12 +57,9 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
-            var dateNow = DateTime.UtcNow;
+            var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customer.DateOfBirth);
 
-            if (customer.DateOfBirth.ToUniversalTime().Date > dateNow.Date)
-            {
-                return BadRequest("You cannot put the date with the day after today.");
-            }
+            if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
             var findCustomerByEmail = _repository.GetByEmail(customer.Email);
 
@@ -125,6 +123,10 @@ namespace CustomerManagement.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
+            var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customerDto.DateOfBirth);
+
+            if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
+
             var findCustomer = _repository.GetById(id);
 
             if (findCustomer == null)
@@ -154,6 +156,9 @@ namespace CustomerManagement.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
+            // verificar o campo do email.
+            
+
             var findCustomer = _repository.GetById(id);
 
             if (findCustomer == null)
@@ -182,11 +187,12 @@ namespace CustomerManagement.Controllers
             }
             if (customerPatchDto.DateOfBirth != null)
             {
+                var dateIsValid = new CustomerValidator().VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
+
+                if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
                 findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
             }
 
-            //findCustomer.CustomerId = id;
-            
             _repository.Update(id, findCustomer);
         
             return Ok(findCustomer);
