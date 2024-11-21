@@ -136,10 +136,11 @@ namespace CustomerManagement.Controllers
 
             var findCustomerByEmail = _repository.GetByEmail(customerDto.Email);
 
-            if (findCustomerByEmail != null)
-            {
+            if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
                 return Conflict("This Email exists");
-            }
+
+            if (findCustomer.Email != customerDto.Email)
+                    findCustomer.Email = customerDto.Email;
 
             findCustomer.CustomerId = id;
             findCustomer.FirstName = customerDto.FirstName;
@@ -170,12 +171,11 @@ namespace CustomerManagement.Controllers
             {
                 var findCustomerByEmail = _repository.GetByEmail(customerPatchDto.Email);
 
-                if (findCustomerByEmail != null)
-                {
+                if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
                     return Conflict("This Email exists");
-                }
 
-                findCustomer.Email = customerPatchDto.Email;
+                if (findCustomer.Email != customerPatchDto.Email)
+                    findCustomer.Email = customerPatchDto.Email;
             }
             if (customerPatchDto.FirstName != null)
             {
