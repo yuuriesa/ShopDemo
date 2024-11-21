@@ -23,20 +23,14 @@ namespace CustomerManagement.Controllers
         [HttpGet]
         public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            if (pageNumber < 0 || pageSize < 0)
-            {
-                return BadRequest();
-            }
+            if (pageNumber < 0 || pageSize < 0) return BadRequest();
 
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
             var allCustomers = _repository.GetAll(validFilter);
 
 
-            if (allCustomers.Count() == 0)
-            {
-                return NoContent();
-            }
+            if (allCustomers.Count() == 0) return NoContent();
 
             return Ok(allCustomers);
         }
@@ -46,10 +40,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _repository.GetById(id);
 
-            if (findCustomer == null)
-            {
-                return NotFound();
-            }
+            if (findCustomer == null) return NotFound();
 
             return Ok(findCustomer);
         }
@@ -63,10 +54,7 @@ namespace CustomerManagement.Controllers
 
             var findCustomerByEmail = _repository.GetByEmail(customer.Email);
 
-            if (findCustomerByEmail != null)
-            {
-                return Conflict("This email exists");
-            }
+            if (findCustomerByEmail != null) return Conflict("This email exists");
 
             var newCustomer = new Customer
             {
@@ -82,7 +70,7 @@ namespace CustomerManagement.Controllers
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
         }
 
-        [HttpPost("add-list")]
+        [HttpPost("batch")]
         public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {
             List<Customer> listCustomersForResponse = new List<Customer>();
@@ -148,10 +136,7 @@ namespace CustomerManagement.Controllers
 
             var findCustomer = _repository.GetById(id);
 
-            if (findCustomer == null)
-            {
-                return NotFound();
-            }
+            if (findCustomer == null) return NotFound();
 
             var findCustomerByEmail = _repository.GetByEmail(customerDto.Email);
 
@@ -177,15 +162,9 @@ namespace CustomerManagement.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
-            // verificar o campo do email.
-            
-
             var findCustomer = _repository.GetById(id);
 
-            if (findCustomer == null)
-            {
-                return NotFound();
-            }
+            if (findCustomer == null) return NotFound();
 
             if (customerPatchDto.Email != null)
             {
@@ -224,10 +203,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _repository.GetById(id);
 
-            if (findCustomer == null)
-            {
-                return NotFound();
-            }
+            if (findCustomer == null) return NotFound();
 
             _repository.Delete(id);
             _repository.SaveChanges();
