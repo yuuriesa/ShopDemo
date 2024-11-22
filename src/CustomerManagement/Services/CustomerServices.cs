@@ -45,5 +45,20 @@ namespace CustomerManagement.Services
 
             return false;
         }
+
+        public Customer Add(CustomerDto customer)
+        {
+            var newCustomer = new Customer
+            {
+                FirstName = customer.FirstName,
+                LastName = customer.LastName, 
+                Email = customer.Email, 
+                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
+             };
+
+            _repository.Add(newCustomer);
+            
+            return newCustomer;
+        }
     }
 }

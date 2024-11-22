@@ -9,5 +9,6 @@ namespace CustomerManagement.Services
         public IEnumerable<Customer> GetAll(PaginationFilter validFilter);
         public Customer GetById(int id);
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
+        public Customer Add(CustomerDto customer);
     }
 }

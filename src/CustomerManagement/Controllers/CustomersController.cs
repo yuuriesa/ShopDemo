@@ -57,15 +57,8 @@ namespace CustomerManagement.Controllers
 
             if (findCustomerByEmail != null) return Conflict("This email exists");
 
-            var newCustomer = new Customer
-            {
-                FirstName = customer.FirstName,
-                LastName = customer.LastName, 
-                Email = customer.Email, 
-                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
-             };
+            var newCustomer = _services.Add(customer);
 
-            _repository.Add(newCustomer);
             _repository.SaveChanges();
 
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
