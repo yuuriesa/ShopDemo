@@ -1,6 +1,7 @@
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
+using CustomerManagement.Utils;
 
 namespace CustomerManagement.Services
 {
@@ -103,8 +104,21 @@ namespace CustomerManagement.Services
             return listCustomersForResponse;
         }
 
-        public void Update(int id, Customer findCustomer, CustomerDto customerDto)
+        public ServiceResult<Customer> Update(int id, CustomerDto customerDto)
         {
+            var dateIsValid = VerifyDateOfBirth(customerDto.DateOfBirth);
+
+            if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+
+            var findCustomer = GetById(id);
+
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+
+            var findCustomerByEmail = GetByEmail(customerDto.Email);
+
+            if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
+                return ServiceResult<Customer>.ErrorResult("This Email exists.", 409);
+
             if (findCustomer.Email != customerDto.Email)
                     findCustomer.Email = customerDto.Email;
 
@@ -114,6 +128,7 @@ namespace CustomerManagement.Services
             findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
             
             _repository.Update(id, findCustomer);
+            return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
 
         public void UpdatePatch(int id, Customer findCustomer,CustomerPatchDto customerPatchDto)

@@ -101,35 +101,28 @@ namespace CustomerManagement.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
-            var dateIsValid = _services.VerifyDateOfBirth(customerDto.DateOfBirth);
+            var result = _services.Update(id, customerDto);
+            
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
 
-            if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
-
-            var findCustomer = _services.GetById(id);
-
-            if (findCustomer == null) return NotFound();
-
-            var findCustomerByEmail = _services.GetByEmail(customerDto.Email);
-
-            if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
-                return Conflict("This Email exists");
-
-            _services.Update(id, findCustomer, customerDto);
             _services.SaveChanges();
         
-            return Ok(findCustomer);
+            return Ok(result.Data);
         }
 
         [HttpPatch("{id}")]
         public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
-            var findCustomer = _repository.GetById(id);
+            var findCustomer = _services.GetById(id);
 
             if (findCustomer == null) return NotFound();
 
             if (customerPatchDto.Email != null)
             {
-                var findCustomerByEmail = _repository.GetByEmail(customerPatchDto.Email);
+                var findCustomerByEmail = _services.GetByEmail(customerPatchDto.Email);
 
                 if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
                     return Conflict("This Email exists");
@@ -146,7 +139,7 @@ namespace CustomerManagement.Controllers
             }
             
             _services.UpdatePatch(id, findCustomer, customerPatchDto);
-            _repository.SaveChanges();
+            _services.SaveChanges();
         
             return Ok(findCustomer);
         }

@@ -1,5 +1,6 @@
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
+using CustomerManagement.Utils;
 
 namespace CustomerManagement.Services
 {
@@ -13,7 +14,7 @@ namespace CustomerManagement.Services
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
         public Customer Add(CustomerDto customer);
         public void AddRange(IEnumerable<CustomerDto> customers);
-        public void Update(int id, Customer findCustomer, CustomerDto customerDto);
+        public ServiceResult<Customer> Update(int id,  CustomerDto customerDto);
         public void UpdatePatch(int id, Customer findCustomer, CustomerPatchDto customerPatchDto);
         public void SaveChanges();
     }
