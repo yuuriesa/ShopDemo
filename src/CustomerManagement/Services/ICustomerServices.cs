@@ -14,6 +14,7 @@ namespace CustomerManagement.Services
         public Customer Add(CustomerDto customer);
         public void AddRange(IEnumerable<CustomerDto> customers);
         public void Update(int id, Customer findCustomer, CustomerDto customerDto);
+        public void UpdatePatch(int id, Customer findCustomer, CustomerPatchDto customerPatchDto);
         public void SaveChanges();
     }
 }

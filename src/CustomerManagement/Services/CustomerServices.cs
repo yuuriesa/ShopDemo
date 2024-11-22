@@ -115,5 +115,18 @@ namespace CustomerManagement.Services
             
             _repository.Update(id, findCustomer);
         }
+
+        public void UpdatePatch(int id, Customer findCustomer,CustomerPatchDto customerPatchDto)
+        {
+            if (customerPatchDto.FirstName != null)
+            {
+                findCustomer.FirstName = customerPatchDto.FirstName;
+            }
+            if (customerPatchDto.LastName != null)
+            {
+                findCustomer.LastName = customerPatchDto.LastName;
+            }
+            _repository.Update(id, findCustomer);
+        }
     }
 }

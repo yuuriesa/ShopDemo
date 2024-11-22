@@ -115,7 +115,7 @@ namespace CustomerManagement.Controllers
                 return Conflict("This Email exists");
 
             _services.Update(id, findCustomer, customerDto);
-            _repository.SaveChanges();
+            _services.SaveChanges();
         
             return Ok(findCustomer);
         }
@@ -137,23 +137,15 @@ namespace CustomerManagement.Controllers
                 if (findCustomer.Email != customerPatchDto.Email)
                     findCustomer.Email = customerPatchDto.Email;
             }
-            if (customerPatchDto.FirstName != null)
-            {
-                findCustomer.FirstName = customerPatchDto.FirstName;
-            }
-            if (customerPatchDto.LastName != null)
-            {
-                findCustomer.LastName = customerPatchDto.LastName;
-            }
             if (customerPatchDto.DateOfBirth != null)
             {
-                var dateIsValid = new CustomerValidator().VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
+                var dateIsValid = _services.VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
 
                 if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
                 findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
             }
-
-            _repository.Update(id, findCustomer);
+            
+            _services.UpdatePatch(id, findCustomer, customerPatchDto);
             _repository.SaveChanges();
         
             return Ok(findCustomer);
