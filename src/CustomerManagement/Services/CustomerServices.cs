@@ -1,4 +1,5 @@
 using CustomerManagement.DTO;
+using CustomerManagement.Models;
 using CustomerManagement.Repository;
 
 namespace CustomerManagement.Services
@@ -19,6 +20,12 @@ namespace CustomerManagement.Services
             .Where(group => group.Count() > 1)
             .Select(group => group.Key)
             .ToList();
+        }
+
+        public IEnumerable<Customer> GetAll(PaginationFilter validFilter)
+        {
+            var allCustomers = _repository.GetAll(validFilter);
+            return allCustomers;
         }
     }
 }

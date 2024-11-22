@@ -28,7 +28,7 @@ namespace CustomerManagement.Controllers
 
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
-            var allCustomers = _repository.GetAll(validFilter);
+            var allCustomers = _services.GetAll(validFilter);
 
 
             if (allCustomers.Count() == 0) return NoContent();
