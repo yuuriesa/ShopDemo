@@ -27,5 +27,11 @@ namespace CustomerManagement.Services
             var allCustomers = _repository.GetAll(validFilter);
             return allCustomers;
         }
+
+        public Customer GetById(int id)
+        {
+            var findCustomer = _repository.GetById(id);
+            return findCustomer;
+        }
     }
 }
