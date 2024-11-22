@@ -49,7 +49,7 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
-            var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customer.DateOfBirth);
+            var dateIsValid = _services.VerifyDateOfBirth(customer.DateOfBirth);
 
             if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 

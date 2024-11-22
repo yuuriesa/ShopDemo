@@ -33,5 +33,17 @@ namespace CustomerManagement.Services
             var findCustomer = _repository.GetById(id);
             return findCustomer;
         }
+
+        public bool VerifyDateOfBirth(DateTime customerDateOfBirth)
+        {
+            var dateNow = DateTime.UtcNow;
+
+            if (customerDateOfBirth.ToUniversalTime().Date > dateNow.Date)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

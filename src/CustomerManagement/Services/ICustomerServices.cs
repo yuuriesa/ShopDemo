@@ -8,5 +8,6 @@ namespace CustomerManagement.Services
         public List<string> GetDuplicateEmails(IEnumerable<CustomerDto> customers);
         public IEnumerable<Customer> GetAll(PaginationFilter validFilter);
         public Customer GetById(int id);
+        public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
     }
 }
