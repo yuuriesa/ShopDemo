@@ -70,7 +70,6 @@ namespace CustomerManagement.Controllers
             if (customers.Count() == 0) return NoContent();
 
             List<Customer> listCustomersForResponse = new List<Customer>();
-            var dateNow = DateTime.UtcNow;
 
             var duplicateEmails = _services.GetDuplicateEmails(customers: customers);
 
@@ -81,7 +80,7 @@ namespace CustomerManagement.Controllers
             
             foreach (var customer in customers)
             {
-                var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customer.DateOfBirth);
+                var dateIsValid = _services.VerifyDateOfBirth(customer.DateOfBirth);
 
                 if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
