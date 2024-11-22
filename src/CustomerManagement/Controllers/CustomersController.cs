@@ -53,7 +53,7 @@ namespace CustomerManagement.Controllers
 
             if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
-            var findCustomerByEmail = _repository.GetByEmail(customer.Email);
+            var findCustomerByEmail = _services.GetByEmail(customer.Email);
 
             if (findCustomerByEmail != null) return Conflict("This email exists");
 

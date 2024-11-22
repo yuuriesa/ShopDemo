@@ -57,8 +57,14 @@ namespace CustomerManagement.Services
              };
 
             _repository.Add(newCustomer);
-            
+
             return newCustomer;
+        }
+
+        public Customer GetByEmail(string email)
+        {
+            var findCustomerByEmail = _repository.GetByEmail(email);
+            return findCustomerByEmail;
         }
     }
 }
