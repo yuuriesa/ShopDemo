@@ -53,5 +53,11 @@ namespace CustomerManagement.Repository
         {
             _dbContext.SaveChanges();
         }
+
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            dbSetEntity.AddRange(entities);
+
+        }
     }
 }

@@ -69,8 +69,6 @@ namespace CustomerManagement.Controllers
         {
             if (customers.Count() == 0) return NoContent();
 
-            List<Customer> listCustomersForResponse = new List<Customer>();
-
             var duplicateEmails = _services.GetDuplicateEmails(customers: customers);
 
             if (duplicateEmails.Any())
@@ -92,27 +90,10 @@ namespace CustomerManagement.Controllers
                 }       
             }
 
-            foreach (var customer in customers)
-            {
-                var newCustomer = new Customer
-                {
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName, 
-                    Email = customer.Email, 
-                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
-                };
-
-                _repository.Add(newCustomer);      
-            }
-            
-
-            
-            _repository.SaveChanges();
-            
-            foreach (var customer in customers)
-            {
-                listCustomersForResponse.Add(_repository.GetByEmail(customer.Email));
-            }
+            _services.AddRange(customers);
+            _services.SaveChanges();
+                      
+            var listCustomersForResponse = _services.GetListCustomersByEmail(customers);
 
             return Created("", listCustomersForResponse);
         }

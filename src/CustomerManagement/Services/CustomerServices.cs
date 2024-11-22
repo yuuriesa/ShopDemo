@@ -71,5 +71,36 @@ namespace CustomerManagement.Services
         {
             _repository.SaveChanges();
         }
+
+        public void AddRange(IEnumerable<CustomerDto> customers)
+        {
+            List<Customer> listCustomers = new List<Customer>();
+
+            foreach (var customer in customers)
+            {
+                var newCustomer = new Customer
+                {
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName, 
+                    Email = customer.Email, 
+                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
+                };
+
+                listCustomers.Add(newCustomer);      
+            }
+
+            _repository.AddRange(listCustomers);
+        }
+
+        public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers)
+        {
+            List<Customer> listCustomersForResponse = new List<Customer>();
+            foreach (var customer in customers)
+            {
+                listCustomersForResponse.Add(_repository.GetByEmail(customer.Email));
+            }
+
+            return listCustomersForResponse;
+        }
     }
 }
