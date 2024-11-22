@@ -82,7 +82,7 @@ namespace CustomerManagement.Controllers
 
                 if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
-                var findCustomerByEmail = _repository.GetByEmail(customer.Email);
+                var findCustomerByEmail = _services.GetByEmail(customer.Email);
 
                 if (findCustomerByEmail != null)
                 {
@@ -101,32 +101,22 @@ namespace CustomerManagement.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {
-            var dateIsValid = new CustomerValidator().VerifyDateOfBirth(customerDto.DateOfBirth);
+            var dateIsValid = _services.VerifyDateOfBirth(customerDto.DateOfBirth);
 
             if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
 
-            var findCustomer = _repository.GetById(id);
+            var findCustomer = _services.GetById(id);
 
             if (findCustomer == null) return NotFound();
 
-            var findCustomerByEmail = _repository.GetByEmail(customerDto.Email);
+            var findCustomerByEmail = _services.GetByEmail(customerDto.Email);
 
             if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
                 return Conflict("This Email exists");
 
-            if (findCustomer.Email != customerDto.Email)
-                    findCustomer.Email = customerDto.Email;
-
-            findCustomer.CustomerId = id;
-            findCustomer.FirstName = customerDto.FirstName;
-            findCustomer.LastName = customerDto.LastName;
-            //findCustomer.Email = customerDto.Email;
-            findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
-            
-            _repository.Update(id, findCustomer);
+            _services.Update(id, findCustomer, customerDto);
             _repository.SaveChanges();
-
-            
+        
             return Ok(findCustomer);
         }
 

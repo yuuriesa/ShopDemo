@@ -102,5 +102,18 @@ namespace CustomerManagement.Services
 
             return listCustomersForResponse;
         }
+
+        public void Update(int id, Customer findCustomer, CustomerDto customerDto)
+        {
+            if (findCustomer.Email != customerDto.Email)
+                    findCustomer.Email = customerDto.Email;
+
+            findCustomer.CustomerId = id;
+            findCustomer.FirstName = customerDto.FirstName;
+            findCustomer.LastName = customerDto.LastName;
+            findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
+            
+            _repository.Update(id, findCustomer);
+        }
     }
 }
