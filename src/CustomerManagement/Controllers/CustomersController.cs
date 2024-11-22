@@ -12,11 +12,13 @@ namespace CustomerManagement.Controllers
     [Route("api/[controller]")]
     public class CustomersController : ControllerBase
     {
-        private ICustomerRepository _repository;
+        private readonly ICustomerRepository _repository;
+        private readonly ICustomerServices _services;
 
-        public CustomersController(ICustomerRepository repository)
+        public CustomersController(ICustomerRepository repository, ICustomerServices services)
         {
             _repository = repository;
+            _services = services;
         }
 
         [HttpGet]
@@ -77,7 +79,7 @@ namespace CustomerManagement.Controllers
             List<Customer> listCustomersForResponse = new List<Customer>();
             var dateNow = DateTime.UtcNow;
 
-            var duplicateEmails = new CustomerServices().GetDuplicateEmails(customers: customers);
+            var duplicateEmails = _services.GetDuplicateEmails(customers: customers);
 
             if (duplicateEmails.Any())
             {
