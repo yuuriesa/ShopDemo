@@ -59,7 +59,7 @@ namespace CustomerManagement.Controllers
 
             var newCustomer = _services.Add(customer);
 
-            _repository.SaveChanges();
+            _services.SaveChanges();
 
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
         }

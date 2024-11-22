@@ -66,5 +66,10 @@ namespace CustomerManagement.Services
             var findCustomerByEmail = _repository.GetByEmail(email);
             return findCustomerByEmail;
         }
+
+        public void SaveChanges()
+        {
+            _repository.SaveChanges();
+        }
     }
 }

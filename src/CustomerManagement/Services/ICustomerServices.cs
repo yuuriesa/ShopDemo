@@ -11,5 +11,6 @@ namespace CustomerManagement.Services
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
         public Customer Add(CustomerDto customer);
         public Customer GetByEmail(string email);
+        public void SaveChanges();
     }
 }
