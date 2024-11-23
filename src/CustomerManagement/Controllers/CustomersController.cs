@@ -66,28 +66,13 @@ namespace CustomerManagement.Controllers
         {
             if (customers.Count() == 0) return NoContent();
 
-            var duplicateEmails = _services.GetDuplicateEmails(customers: customers);
+            var result = _services.AddRange(customers);
 
-            if (duplicateEmails.Any())
+            if (!result.Success)
             {
-                return BadRequest($"Duplicate email(s) found in input: {string.Join(", ", duplicateEmails)}.");
-            }
-            
-            foreach (var customer in customers)
-            {
-                var dateIsValid = _services.VerifyDateOfBirth(customer.DateOfBirth);
-
-                if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
-
-                var findCustomerByEmail = _services.GetByEmail(customer.Email);
-
-                if (findCustomerByEmail != null)
-                {
-                    return Conflict($"This email: '{customer.Email}' exists");
-                }       
+                return StatusCode(result.StatusCode, result.Message);
             }
 
-            _services.AddRange(customers);
             _services.SaveChanges();
                       
             var listCustomersForResponse = _services.GetListCustomersByEmail(customers);

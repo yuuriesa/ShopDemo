@@ -81,9 +81,31 @@ namespace CustomerManagement.Services
             _repository.SaveChanges();
         }
 
-        public void AddRange(IEnumerable<CustomerDto> customers)
+        public ServiceResult<IEnumerable<Customer>> AddRange(IEnumerable<CustomerDto> customers)
         {
             List<Customer> listCustomers = new List<Customer>();
+
+            var duplicateEmails = GetDuplicateEmails(customers: customers);
+
+            if (duplicateEmails.Any())
+            {
+                return ServiceResult<IEnumerable<Customer>>.ErrorResult($"Duplicate email(s) found in input: {string.Join(", ", duplicateEmails)}.", 400);
+            }
+            
+            foreach (var customer in customers)
+            {
+                var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
+
+                if (dateIsValid) return ServiceResult<IEnumerable<Customer>>.ErrorResult("You cannot put the date with the day after today.", 400);
+
+                var findCustomerByEmail = GetByEmail(customer.Email);
+
+                if (findCustomerByEmail != null)
+                {
+                    return ServiceResult<IEnumerable<Customer>>.ErrorResult($"This email: '{customer.Email}' exists", 409);
+                }       
+            }
+
 
             foreach (var customer in customers)
             {
@@ -99,6 +121,8 @@ namespace CustomerManagement.Services
             }
 
             _repository.AddRange(listCustomers);
+
+            return ServiceResult<IEnumerable<Customer>>.SuccessResult(listCustomers, 201);
         }
 
         public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers)
