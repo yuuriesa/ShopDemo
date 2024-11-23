@@ -166,5 +166,16 @@ namespace CustomerManagement.Services
 
             return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
+
+        public ServiceResult<Customer> Delete(int id)
+        {
+            var findCustomer = GetById(id);
+
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+
+            _repository.Delete(id);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
+        }
     }
 }

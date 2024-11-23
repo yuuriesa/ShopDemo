@@ -16,6 +16,7 @@ namespace CustomerManagement.Services
         public void AddRange(IEnumerable<CustomerDto> customers);
         public ServiceResult<Customer> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto);
+        public ServiceResult<Customer> Delete(int id);
         public void SaveChanges();
     }
 }

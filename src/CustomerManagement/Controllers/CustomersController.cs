@@ -131,14 +131,15 @@ namespace CustomerManagement.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var findCustomer = _repository.GetById(id);
+            var result = _services.Delete(id);
 
-            if (findCustomer == null) return NotFound();
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
 
-            _repository.Delete(id);
             _repository.SaveChanges();
-            
-            
+                       
             return NoContent();
         }
     }
