@@ -120,7 +120,7 @@ namespace CustomerManagement.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
-            _repository.SaveChanges();
+            _services.SaveChanges();
                        
             return NoContent();
         }
