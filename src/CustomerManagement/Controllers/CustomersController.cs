@@ -49,19 +49,16 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
-            var dateIsValid = _services.VerifyDateOfBirth(customer.DateOfBirth);
+            var result = _services.Add(customer);
 
-            if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
-
-            var findCustomerByEmail = _services.GetByEmail(customer.Email);
-
-            if (findCustomerByEmail != null) return Conflict("This email exists");
-
-            var newCustomer = _services.Add(customer);
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
 
             _services.SaveChanges();
 
-            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = newCustomer.CustomerId}, value: newCustomer);
+            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = result.Data.CustomerId}, value: result.Data);
         }
 
         [HttpPost("batch")]

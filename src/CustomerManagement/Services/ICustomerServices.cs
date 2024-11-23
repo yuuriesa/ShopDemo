@@ -12,7 +12,7 @@ namespace CustomerManagement.Services
         public Customer GetByEmail(string email);
         public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers);
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
-        public Customer Add(CustomerDto customer);
+        public ServiceResult<Customer> Add(CustomerDto customer);
         public void AddRange(IEnumerable<CustomerDto> customers);
         public ServiceResult<Customer> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto);

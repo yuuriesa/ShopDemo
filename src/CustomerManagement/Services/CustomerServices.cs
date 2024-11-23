@@ -47,8 +47,16 @@ namespace CustomerManagement.Services
             return false;
         }
 
-        public Customer Add(CustomerDto customer)
+        public ServiceResult<Customer> Add(CustomerDto customer)
         {
+            var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
+
+            if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+
+            var findCustomerByEmail = GetByEmail(customer.Email);
+
+            if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult("This email exists", 409);
+
             var newCustomer = new Customer
             {
                 FirstName = customer.FirstName,
@@ -59,7 +67,7 @@ namespace CustomerManagement.Services
 
             _repository.Add(newCustomer);
 
-            return newCustomer;
+            return ServiceResult<Customer>.SuccessResult(newCustomer, 201);
         }
 
         public Customer GetByEmail(string email)
