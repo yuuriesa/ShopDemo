@@ -116,32 +116,16 @@ namespace CustomerManagement.Controllers
         [HttpPatch("{id}")]
         public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
-            var findCustomer = _services.GetById(id);
-
-            if (findCustomer == null) return NotFound();
-
-            if (customerPatchDto.Email != null)
+            var result = _services.UpdatePatch(id, customerPatchDto);
+            
+            if (!result.Success)
             {
-                var findCustomerByEmail = _services.GetByEmail(customerPatchDto.Email);
-
-                if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
-                    return Conflict("This Email exists");
-
-                if (findCustomer.Email != customerPatchDto.Email)
-                    findCustomer.Email = customerPatchDto.Email;
-            }
-            if (customerPatchDto.DateOfBirth != null)
-            {
-                var dateIsValid = _services.VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
-
-                if (dateIsValid) return BadRequest("You cannot put the date with the day after today.");
-                findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
+                return StatusCode(result.StatusCode, result.Message);
             }
             
-            _services.UpdatePatch(id, findCustomer, customerPatchDto);
             _services.SaveChanges();
         
-            return Ok(findCustomer);
+            return Ok(result.Data);
         }
 
         [HttpDelete("{id}")]

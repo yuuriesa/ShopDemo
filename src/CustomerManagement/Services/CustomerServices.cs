@@ -131,8 +131,29 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
 
-        public void UpdatePatch(int id, Customer findCustomer,CustomerPatchDto customerPatchDto)
+        public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto)
         {
+            var findCustomer = GetById(id);
+
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+
+            if (customerPatchDto.Email != null)
+            {
+                var findCustomerByEmail = GetByEmail(customerPatchDto.Email);
+
+                if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
+                    return ServiceResult<Customer>.ErrorResult("This Email exists", 409);
+
+                if (findCustomer.Email != customerPatchDto.Email)
+                    findCustomer.Email = customerPatchDto.Email;
+            }
+            if (customerPatchDto.DateOfBirth != null)
+            {
+                var dateIsValid = VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
+
+                if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+                findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
+            }
             if (customerPatchDto.FirstName != null)
             {
                 findCustomer.FirstName = customerPatchDto.FirstName;
@@ -142,6 +163,8 @@ namespace CustomerManagement.Services
                 findCustomer.LastName = customerPatchDto.LastName;
             }
             _repository.Update(id, findCustomer);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
     }
 }
