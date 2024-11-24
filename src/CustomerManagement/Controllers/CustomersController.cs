@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CustomerManagement.Data;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
@@ -12,13 +13,15 @@ namespace CustomerManagement.Controllers
     [Route("api/[controller]")]
     public class CustomersController : ControllerBase
     {
+        private readonly ApplicationDbContext _dbContext;
         private readonly ICustomerRepository _repository;
         private readonly ICustomerServices _services;
 
-        public CustomersController(ICustomerRepository repository, ICustomerServices services)
+        public CustomersController(ICustomerRepository repository, ICustomerServices services, ApplicationDbContext dbContext)
         {
             _repository = repository;
             _services = services;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
@@ -62,22 +65,32 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPost("batch")]
-        public IActionResult AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
+        public async Task<IActionResult> AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {
-            if (customers.Count() == 0) return NoContent();
-
-            var result = _services.AddRange(customers);
-
-            if (!result.Success)
+            var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                return StatusCode(result.StatusCode, result.Message);
+                if (customers.Count() == 0) return NoContent();
+
+                var result = _services.AddRange(customers);
+
+                if (!result.Success)
+                {
+                    return StatusCode(result.StatusCode, result.Message);
+                }
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                        
+                var listCustomersForResponse = _services.GetListCustomersByEmail(customers);
+
+                return Created("", listCustomersForResponse);
             }
-
-            _services.SaveChanges();
-                      
-            var listCustomersForResponse = _services.GetListCustomersByEmail(customers);
-
-            return Created("", listCustomersForResponse);
+            catch (System.Exception)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = "Error processing transaction." });
+            }
         }
 
         [HttpPut("{id}")]
