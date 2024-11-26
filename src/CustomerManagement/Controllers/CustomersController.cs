@@ -34,14 +34,7 @@ namespace CustomerManagement.Controllers
             var allCustomers = _services.GetAll(validFilter);
             if (allCustomers.Count() == 0) return NoContent();
 
-            List<CustomerDtoResponse> allCustomersDtoResponse = new List<CustomerDtoResponse>();
-
-            foreach (var customer in allCustomers)
-            {
-                var newCustomerResponse = _services.GenerateCustomerDtoResponse(customer);
-                allCustomersDtoResponse.Add(newCustomerResponse);
-            }
-
+            var allCustomersDtoResponse = _services.GenerateListCustomerDtoResponses(allCustomers.ToList());
             return Ok(allCustomersDtoResponse);
         }
 

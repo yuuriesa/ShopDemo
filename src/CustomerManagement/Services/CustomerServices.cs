@@ -287,5 +287,17 @@ namespace CustomerManagement.Services
 
             return newCustomer;
         }
+
+        public IEnumerable<CustomerDtoResponse> GenerateListCustomerDtoResponses(List<Customer> customers)
+        {
+            List<CustomerDtoResponse> allCustomersDtoResponse = new List<CustomerDtoResponse>();
+
+            foreach (var customer in customers)
+            {
+                var newCustomerResponse = GenerateCustomerDtoResponse(customer);
+                allCustomersDtoResponse.Add(newCustomerResponse);
+            }
+            return allCustomersDtoResponse;
+        }
     }
 }

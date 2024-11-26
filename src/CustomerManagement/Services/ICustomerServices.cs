@@ -19,6 +19,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> Delete(int id);
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer);
         public Customer GenerateListAddressForCustomerAndReturnCustomer(CustomerDto customer);
+        public IEnumerable<CustomerDtoResponse> GenerateListCustomerDtoResponses(List<Customer> customers);
         public void SaveChanges();
     }
 }
