@@ -28,8 +28,15 @@ namespace CustomerManagement.Services
 
         public IEnumerable<Customer> GetAll(PaginationFilter validFilter)
         {
+            List<Customer> customersResponses = new List<Customer>();
             var allCustomers = _repository.GetAll(validFilter);
-            return allCustomers;
+            foreach (var customer in allCustomers)
+            {
+                var findAddress = _addressRepository.GetAllAddressesByIdCustomer(customer.CustomerId);
+                customer.Addresses = findAddress.ToList();
+                customersResponses.Add(customer);
+            };
+            return customersResponses;
         }
 
         public Customer GetById(int id)

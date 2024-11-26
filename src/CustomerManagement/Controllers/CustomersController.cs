@@ -32,11 +32,17 @@ namespace CustomerManagement.Controllers
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
             var allCustomers = _services.GetAll(validFilter);
-
-
             if (allCustomers.Count() == 0) return NoContent();
 
-            return Ok(allCustomers);
+            List<CustomerDtoResponse> allCustomersDtoResponse = new List<CustomerDtoResponse>();
+
+            foreach (var customer in allCustomers)
+            {
+                var newCustomerResponse = _services.GenerateCustomerDtoResponse(customer);
+                allCustomersDtoResponse.Add(newCustomerResponse);
+            }
+
+            return Ok(allCustomersDtoResponse);
         }
 
         [HttpGet("{id}")]
