@@ -6,7 +6,7 @@ namespace CustomerManagement.Data
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public DbSet<Customer> Customers { get; set; }
-
+        public DbSet<Address> Addresses { get; set; }
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
 

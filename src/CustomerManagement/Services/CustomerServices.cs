@@ -57,12 +57,32 @@ namespace CustomerManagement.Services
 
             if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult("This email exists", 409);
 
+            List<Address> addresses = new List<Address>();
+
+            foreach (var address in customer.Addresses)
+            {
+                var newAddress = new Address
+                {
+                    ZipCode = address.ZipCode,
+                    Street = address.Street,
+                    Number = address.Number,
+                    Neighborhood = address.Neighborhood,
+                    AddressComplement = address.AddressComplement,
+                    City = address.City,
+                    State = address.State,
+                    Country = address.Country
+                };
+
+                addresses.Add(newAddress);
+            }
+
             var newCustomer = new Customer
             {
                 FirstName = customer.FirstName,
                 LastName = customer.LastName, 
                 Email = customer.Email, 
-                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
+                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
+                Addresses = addresses
              };
 
             _repository.Add(newCustomer);
