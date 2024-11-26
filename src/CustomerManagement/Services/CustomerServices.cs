@@ -57,33 +57,7 @@ namespace CustomerManagement.Services
 
             if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult("This email exists", 409);
 
-            List<Address> addresses = new List<Address>();
-
-            foreach (var address in customer.Addresses)
-            {
-                var newAddress = new Address
-                {
-                    ZipCode = address.ZipCode,
-                    Street = address.Street,
-                    Number = address.Number,
-                    Neighborhood = address.Neighborhood,
-                    AddressComplement = address.AddressComplement,
-                    City = address.City,
-                    State = address.State,
-                    Country = address.Country
-                };
-
-                addresses.Add(newAddress);
-            }
-
-            var newCustomer = new Customer
-            {
-                FirstName = customer.FirstName,
-                LastName = customer.LastName, 
-                Email = customer.Email, 
-                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
-                Addresses = addresses
-             };
+            var newCustomer = GenerateListAddressForCustomerAndReturnCustomer(customer);
 
             _repository.Add(newCustomer);
 
@@ -230,7 +204,7 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
         }
 
-        public CustomerDtoResponse generateCustomerDtoResponse(Customer customer)
+        public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer)
         {
             List<AddressDto> addresses = new List<AddressDto>();
 
@@ -262,6 +236,39 @@ namespace CustomerManagement.Services
              };
 
              return newCustomerResponse;
+        }
+
+        public Customer GenerateListAddressForCustomerAndReturnCustomer(CustomerDto customer)
+        {
+            List<Address> addresses = new List<Address>();
+
+            foreach (var address in customer.Addresses)
+            {
+                var newAddress = new Address
+                {
+                    ZipCode = address.ZipCode,
+                    Street = address.Street,
+                    Number = address.Number,
+                    Neighborhood = address.Neighborhood,
+                    AddressComplement = address.AddressComplement,
+                    City = address.City,
+                    State = address.State,
+                    Country = address.Country
+                };
+
+                addresses.Add(newAddress);
+            }
+
+            var newCustomer = new Customer
+            {
+                FirstName = customer.FirstName,
+                LastName = customer.LastName, 
+                Email = customer.Email, 
+                DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
+                Addresses = addresses
+             };
+
+            return newCustomer;
         }
     }
 }

@@ -63,7 +63,7 @@ namespace CustomerManagement.Controllers
 
             
 
-            var newCustomerResponse = _services.generateCustomerDtoResponse(result.Data);
+            var newCustomerResponse = _services.GenerateCustomerDtoResponse(result.Data);
 
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = result.Data.CustomerId}, value: newCustomerResponse);
         }
