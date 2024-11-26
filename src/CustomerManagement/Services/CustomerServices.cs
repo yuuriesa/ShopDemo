@@ -229,5 +229,39 @@ namespace CustomerManagement.Services
 
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
         }
+
+        public CustomerDtoResponse generateCustomerDtoResponse(Customer customer)
+        {
+            List<AddressDto> addresses = new List<AddressDto>();
+
+            foreach (var address in customer.Addresses)
+            {
+                var newAddress = new AddressDto
+                {
+                    ZipCode = address.ZipCode,
+                    Street = address.Street,
+                    Number = address.Number,
+                    Neighborhood = address.Neighborhood,
+                    AddressComplement = address.AddressComplement,
+                    City = address.City,
+                    State = address.State,
+                    Country = address.Country
+                };
+
+                addresses.Add(newAddress);
+            }
+
+            var newCustomerResponse = new CustomerDtoResponse
+            {
+                CustomerId = customer.CustomerId,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName, 
+                Email = customer.Email, 
+                DateOfBirth = customer.DateOfBirth,
+                Addresses = addresses
+             };
+
+             return newCustomerResponse;
+        }
     }
 }

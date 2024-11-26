@@ -17,6 +17,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto);
         public ServiceResult<Customer> Delete(int id);
+        public CustomerDtoResponse generateCustomerDtoResponse(Customer customer);
         public void SaveChanges();
     }
 }

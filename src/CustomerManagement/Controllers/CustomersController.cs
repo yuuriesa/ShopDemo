@@ -61,7 +61,11 @@ namespace CustomerManagement.Controllers
 
             _services.SaveChanges();
 
-            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = result.Data.CustomerId}, value: result.Data);
+            
+
+            var newCustomerResponse = _services.generateCustomerDtoResponse(result.Data);
+
+            return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = result.Data.CustomerId}, value: newCustomerResponse);
         }
 
         [HttpPost("batch")]
