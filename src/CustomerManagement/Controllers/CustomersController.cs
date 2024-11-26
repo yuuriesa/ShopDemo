@@ -46,7 +46,9 @@ namespace CustomerManagement.Controllers
 
             if (findCustomer == null) return NotFound();
 
-            return Ok(findCustomer);
+            var newCustomerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
+
+            return Ok(newCustomerResponse);
         }
 
         [HttpPost]
@@ -60,8 +62,6 @@ namespace CustomerManagement.Controllers
             }
 
             _services.SaveChanges();
-
-            
 
             var newCustomerResponse = _services.GenerateCustomerDtoResponse(result.Data);
 

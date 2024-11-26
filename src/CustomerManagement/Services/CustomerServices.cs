@@ -2,16 +2,19 @@ using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using CustomerManagement.Utils;
+using CustomerManagement.Services;
 
 namespace CustomerManagement.Services
 {
     public class CustomerServices : ICustomerServices
     {
         private ICustomerRepository _repository;
+        private IAddressRepository _addressRepository;
 
-        public CustomerServices(ICustomerRepository repository)
+        public CustomerServices(ICustomerRepository repository, IAddressRepository addressRepository)
         {
             _repository = repository;
+            _addressRepository = addressRepository;
         }
 
         public List<string> GetDuplicateEmails(IEnumerable<CustomerDto> customers)
@@ -32,6 +35,13 @@ namespace CustomerManagement.Services
         public Customer GetById(int id)
         {
             var findCustomer = _repository.GetById(id);
+            if (findCustomer == null)
+            {
+                return null!;
+            }
+            var findAddress = _addressRepository.GetAllAddressesByIdCustomer(findCustomer.CustomerId);
+            findCustomer.Addresses = findAddress.ToList();
+            
             return findCustomer;
         }
 
