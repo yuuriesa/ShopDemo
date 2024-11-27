@@ -125,8 +125,26 @@ namespace CustomerManagement.Services
                     FirstName = customer.FirstName,
                     LastName = customer.LastName, 
                     Email = customer.Email, 
-                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth)
+                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
+                    Addresses = new List<Address>()
                 };
+
+                foreach (var address in customer.Addresses)
+                {
+                    var newAddress = new Address
+                    {
+                        ZipCode = address.ZipCode,
+                        Street = address.Street,
+                        Number = address.Number,
+                        Neighborhood = address.Neighborhood,
+                        AddressComplement = address.AddressComplement,
+                        City = address.City,
+                        State = address.State,
+                        Country = address.Country
+                    };
+
+                    newCustomer.Addresses.Add(newAddress);
+                }
 
                 listCustomers.Add(newCustomer);      
             }
@@ -244,7 +262,6 @@ namespace CustomerManagement.Services
 
             var newCustomerResponse = new CustomerDtoResponse
             {
-                CustomerId = customer.CustomerId,
                 FirstName = customer.FirstName,
                 LastName = customer.LastName, 
                 Email = customer.Email, 

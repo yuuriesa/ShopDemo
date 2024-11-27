@@ -85,8 +85,14 @@ namespace CustomerManagement.Controllers
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                         
-                var listCustomersForResponse = _services.GetListCustomersByEmail(customers);
+                var getlistCustomers = _services.GetListCustomersByEmail(customers);
+                var listCustomersForResponse = new List<CustomerDtoResponse>();
 
+                foreach (var customer in getlistCustomers)
+                {
+                   var customerDto = _services.GenerateCustomerDtoResponse(customer);
+                   listCustomersForResponse.Add(customerDto);
+                }
                 return Created("", listCustomersForResponse);
             }
             catch (System.Exception)
