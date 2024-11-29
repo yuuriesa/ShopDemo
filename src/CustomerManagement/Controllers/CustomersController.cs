@@ -95,10 +95,10 @@ namespace CustomerManagement.Controllers
                 }
                 return Created("", listCustomersForResponse);
             }
-            catch (System.Exception)
+            catch (Exception err)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { message = "Error processing transaction." });
+                return StatusCode(500, new { message = err.Message });
             }
         }
 

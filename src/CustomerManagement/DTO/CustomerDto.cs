@@ -15,6 +15,7 @@ namespace CustomerManagement.DTO
         [Required(ErrorMessage = "Date of Birth is Required")]
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
+        [Required(ErrorMessage = "At least one address is Required")]
         public ICollection<AddressDto> Addresses { get; set; }
     }
 }
