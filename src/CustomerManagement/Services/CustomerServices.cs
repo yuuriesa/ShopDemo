@@ -165,20 +165,20 @@ namespace CustomerManagement.Services
             return listCustomersForResponse;
         }
 
-        public ServiceResult<Customer> Update(int id, CustomerDto customerDto)
+        public ServiceResult<CustomerDtoResponse> Update(int id, CustomerDto customerDto)
         {
             var dateIsValid = VerifyDateOfBirth(customerDto.DateOfBirth);
 
-            if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+            if (dateIsValid) return ServiceResult<CustomerDtoResponse>.ErrorResult("You cannot put the date with the day after today.", 400);
 
             var findCustomer = GetById(id);
 
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<CustomerDtoResponse>.ErrorResult("Customer not found.", 404);
 
             var findCustomerByEmail = GetByEmail(customerDto.Email);
 
             if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
-                return ServiceResult<Customer>.ErrorResult("This Email exists.", 409);
+                return ServiceResult<CustomerDtoResponse>.ErrorResult("This Email exists.", 409);
 
             if (findCustomer.Email != customerDto.Email)
                     findCustomer.Email = customerDto.Email;
@@ -187,9 +187,10 @@ namespace CustomerManagement.Services
             findCustomer.FirstName = customerDto.FirstName;
             findCustomer.LastName = customerDto.LastName;
             findCustomer.DateOfBirth = DateOnly.FromDateTime(customerDto.DateOfBirth);
+            findCustomer.Addresses = GenerateListAddressForCustomerAndReturnCustomer(customerDto).Addresses;
             
             _repository.Update(id, findCustomer);
-            return ServiceResult<Customer>.SuccessResult(findCustomer);
+            return ServiceResult<CustomerDtoResponse>.SuccessResult(GenerateCustomerDtoResponse(findCustomer), 200);
         }
 
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto)

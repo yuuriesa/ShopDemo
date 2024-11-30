@@ -14,7 +14,7 @@ namespace CustomerManagement.Services
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
         public ServiceResult<Customer> Add(CustomerDto customer);
         public ServiceResult<IEnumerable<Customer>> AddRange(IEnumerable<CustomerDto> customers);
-        public ServiceResult<Customer> Update(int id,  CustomerDto customerDto);
+        public ServiceResult<CustomerDtoResponse> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto);
         public ServiceResult<Customer> Delete(int id);
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer);
