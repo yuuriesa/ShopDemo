@@ -15,7 +15,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> Add(CustomerDto customer);
         public ServiceResult<IEnumerable<Customer>> AddRange(IEnumerable<CustomerDto> customers);
         public ServiceResult<CustomerDtoResponse> Update(int id,  CustomerDto customerDto);
-        public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto);
+        public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto, int? addressId);
         public ServiceResult<Customer> Delete(int id);
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer);
         public Customer GenerateListAddressForCustomerAndReturnCustomer(CustomerDto customer);

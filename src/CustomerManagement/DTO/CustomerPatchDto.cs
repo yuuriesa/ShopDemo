@@ -19,6 +19,6 @@ namespace CustomerManagement.Models
         public string? Email { get; set; }
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
-        public ICollection<AddressDto>? Addresses { get; set; }
+        public AddressPatchDto? Address { get; set; }
     }
 }
