@@ -17,6 +17,7 @@ namespace CustomerManagement.Services
         public ServiceResult<CustomerDtoResponse> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto, int? addressId);
         public ServiceResult<Customer> Delete(int id);
+        public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, CustomerPatchDto customerPatchDto);
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer);
         public Customer GenerateListAddressForCustomerAndReturnCustomer(CustomerDto customer);
         public IEnumerable<CustomerDtoResponse> GenerateListCustomerDtoResponses(List<Customer> customers);

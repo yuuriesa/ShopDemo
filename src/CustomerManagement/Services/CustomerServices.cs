@@ -206,38 +206,8 @@ namespace CustomerManagement.Services
                 if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
                 if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
 
-                if (customerPatchDto.Address.ZipCode != null)
-                {
-                    findAddress.ZipCode = customerPatchDto.Address.ZipCode;
-                }
-                if (customerPatchDto.Address.Street != null)
-                {
-                    findAddress.Street = customerPatchDto.Address.Street;
-                }
-                if (customerPatchDto.Address.Number != null)
-                {
-                    findAddress.Number = (int)customerPatchDto.Address.Number;
-                }
-                if (customerPatchDto.Address.Neighborhood != null)
-                {
-                    findAddress.Neighborhood = customerPatchDto.Address.Neighborhood;
-                }
-                if (customerPatchDto.Address.AddressComplement != null)
-                {
-                    findAddress.AddressComplement = customerPatchDto.Address.AddressComplement;
-                }
-                if (customerPatchDto.Address.City != null)
-                {
-                    findAddress.City = customerPatchDto.Address.City;
-                }
-                if (customerPatchDto.Address.State != null)
-                {
-                    findAddress.State = customerPatchDto.Address.State;
-                }
-                if (customerPatchDto.Address.Country != null)
-                {
-                    findAddress.Country = customerPatchDto.Address.Country;
-                }
+                var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, customerPatchDto);
+                findCustomer.Addresses = new List<Address> { addressForUpdate };
             }
             else if (addressId != null && customerPatchDto.Address == null)
             {
@@ -273,6 +243,7 @@ namespace CustomerManagement.Services
             {
                 findCustomer.LastName = customerPatchDto.LastName;
             }
+            
             _repository.Update(id, findCustomer);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer);
@@ -287,6 +258,44 @@ namespace CustomerManagement.Services
             _repository.Delete(id);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
+        }
+
+        public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, CustomerPatchDto customerPatchDto)
+        {
+                if (customerPatchDto.Address?.ZipCode != null)
+                {
+                    address.ZipCode = customerPatchDto.Address.ZipCode;
+                }
+                if (customerPatchDto.Address?.Street != null)
+                {
+                    address.Street = customerPatchDto.Address.Street;
+                }
+                if (customerPatchDto.Address?.Number != null)
+                {
+                    address.Number = (int)customerPatchDto.Address.Number;
+                }
+                if (customerPatchDto.Address?.Neighborhood != null)
+                {
+                    address.Neighborhood = customerPatchDto.Address.Neighborhood;
+                }
+                if (customerPatchDto.Address?.AddressComplement != null)
+                {
+                    address.AddressComplement = customerPatchDto.Address.AddressComplement;
+                }
+                if (customerPatchDto.Address?.City != null)
+                {
+                    address.City = customerPatchDto.Address.City;
+                }
+                if (customerPatchDto.Address?.State != null)
+                {
+                    address.State = customerPatchDto.Address.State;
+                }
+                if (customerPatchDto.Address?.Country != null)
+                {
+                    address.Country = customerPatchDto.Address.Country;
+                }
+
+                return address;
         }
 
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer)
