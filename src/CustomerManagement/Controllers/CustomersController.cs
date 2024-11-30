@@ -130,7 +130,9 @@ namespace CustomerManagement.Controllers
             
             _services.SaveChanges();
         
-            return Ok(result.Data);
+            var customerResponse = _services.GenerateCustomerDtoResponse(result.Data);
+
+            return Ok(customerResponse);
         }
 
         [HttpDelete("{id}")]
