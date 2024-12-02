@@ -235,16 +235,14 @@ namespace CustomerManagement.Services
             var findCustomer = GetById(id);
             if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
         
-            if (addressId != null && addressPatchDto != null)
-            {
-                var findAddress = _addressRepository.GetById((int)addressId);
+            var findAddress = _addressRepository.GetById((int)addressId);
 
-                if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-                if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
 
-                var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
-                findCustomer.Addresses = new List<Address> { addressForUpdate };
-            }
+            var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
+            findCustomer.Addresses = new List<Address> { addressForUpdate };
+
 
             _repository.Update(id, findCustomer);
 
