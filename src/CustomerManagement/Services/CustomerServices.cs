@@ -241,10 +241,10 @@ namespace CustomerManagement.Services
             if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
 
             var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
-            findCustomer.Addresses = new List<Address> { addressForUpdate };
+            findAddress =  addressForUpdate;
 
 
-            _repository.Update(id, findCustomer);
+            _addressRepository.Update(id, findAddress);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
