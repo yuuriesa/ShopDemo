@@ -135,7 +135,7 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPatch("{id}/Addresses/{addressId}")]
-        public IActionResult UpdatePatch(int id, int? addressId, [FromBody] AddressPatchDto addressPatchDto)
+        public IActionResult UpdatePatch(int id, int addressId, [FromBody] AddressPatchDto addressPatchDto)
         {
             var result = _services.UpdatePatchAddress(id, addressPatchDto, addressId);
             

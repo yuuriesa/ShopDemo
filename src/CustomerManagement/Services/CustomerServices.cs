@@ -230,7 +230,7 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
 
-        public ServiceResult<Customer> UpdatePatchAddress(int id, AddressPatchDto addressPatchDto, int? addressId)
+        public ServiceResult<Customer> UpdatePatchAddress(int id, AddressPatchDto addressPatchDto, int addressId)
         {
             var findCustomer = GetById(id);
             if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
