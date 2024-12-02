@@ -193,30 +193,11 @@ namespace CustomerManagement.Services
             return ServiceResult<CustomerDtoResponse>.SuccessResult(GenerateCustomerDtoResponse(findCustomer), 200);
         }
 
-        public ServiceResult<Customer> UpdatePatch(int id, CustomerPatchDto customerPatchDto, int? addressId)
+        public ServiceResult<Customer> UpdatePatchCustomer(int id, CustomerPatchDto customerPatchDto)
         {
             var findCustomer = GetById(id);
 
             if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
-
-            if (addressId != null && customerPatchDto.Address != null)
-            {
-                var findAddress = _addressRepository.GetById((int)addressId);
-
-                if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-                if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
-
-                var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, customerPatchDto);
-                findCustomer.Addresses = new List<Address> { addressForUpdate };
-            }
-            else if (addressId != null && customerPatchDto.Address == null)
-            {
-                return ServiceResult<Customer>.ErrorResult("Address cannot be null", 400);
-            }
-            else if (addressId == null && customerPatchDto.Address != null)
-            {
-                return ServiceResult<Customer>.ErrorResult("you cannot change the address without your addressId", 400);
-            }
 
             if (customerPatchDto.Email != null)
             {
@@ -249,6 +230,35 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer);
         }
 
+        public ServiceResult<Customer> UpdatePatchAddress(int id, AddressPatchDto addressPatchDto, int? addressId)
+        {
+            var findCustomer = GetById(id);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+        
+            if (addressId != null && addressPatchDto != null)
+            {
+                var findAddress = _addressRepository.GetById((int)addressId);
+
+                if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
+                if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
+
+                var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
+                findCustomer.Addresses = new List<Address> { addressForUpdate };
+            }
+            else if (addressId != null && addressPatchDto == null)
+            {
+                return ServiceResult<Customer>.ErrorResult("Address cannot be null", 400);
+            }
+            else if (addressId == null && addressPatchDto != null)
+            {
+                return ServiceResult<Customer>.ErrorResult("you cannot change the address without your addressId", 400);
+            }
+
+            _repository.Update(id, findCustomer);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer);
+        }
+
         public ServiceResult<Customer> Delete(int id)
         {
             var findCustomer = GetById(id);
@@ -260,39 +270,39 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
         }
 
-        public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, CustomerPatchDto customerPatchDto)
+        public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, AddressPatchDto addressPatchDto)
         {
-                if (customerPatchDto.Address?.ZipCode != null)
+                if (addressPatchDto.ZipCode != null)
                 {
-                    address.ZipCode = customerPatchDto.Address.ZipCode;
+                    address.ZipCode = addressPatchDto.ZipCode;
                 }
-                if (customerPatchDto.Address?.Street != null)
+                if (addressPatchDto.Street != null)
                 {
-                    address.Street = customerPatchDto.Address.Street;
+                    address.Street = addressPatchDto.Street;
                 }
-                if (customerPatchDto.Address?.Number != null)
+                if (addressPatchDto.Number != null)
                 {
-                    address.Number = (int)customerPatchDto.Address.Number;
+                    address.Number = (int)addressPatchDto.Number;
                 }
-                if (customerPatchDto.Address?.Neighborhood != null)
+                if (addressPatchDto.Neighborhood != null)
                 {
-                    address.Neighborhood = customerPatchDto.Address.Neighborhood;
+                    address.Neighborhood = addressPatchDto.Neighborhood;
                 }
-                if (customerPatchDto.Address?.AddressComplement != null)
+                if (addressPatchDto.AddressComplement != null)
                 {
-                    address.AddressComplement = customerPatchDto.Address.AddressComplement;
+                    address.AddressComplement = addressPatchDto.AddressComplement;
                 }
-                if (customerPatchDto.Address?.City != null)
+                if (addressPatchDto.City != null)
                 {
-                    address.City = customerPatchDto.Address.City;
+                    address.City = addressPatchDto.City;
                 }
-                if (customerPatchDto.Address?.State != null)
+                if (addressPatchDto.State != null)
                 {
-                    address.State = customerPatchDto.Address.State;
+                    address.State = addressPatchDto.State;
                 }
-                if (customerPatchDto.Address?.Country != null)
+                if (addressPatchDto.Country != null)
                 {
-                    address.Country = customerPatchDto.Address.Country;
+                    address.Country = addressPatchDto.Country;
                 }
 
                 return address;

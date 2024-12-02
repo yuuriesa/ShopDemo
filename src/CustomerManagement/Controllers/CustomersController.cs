@@ -118,10 +118,26 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPatch("{id}")]
-        [HttpPatch("{id}/Addresses/{addressId}")]
-        public IActionResult UpdatePatch(int id, int? addressId , [FromBody] CustomerPatchDto customerPatchDto)
+        public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
-            var result = _services.UpdatePatch(id, customerPatchDto, addressId);
+            var result = _services.UpdatePatchCustomer(id, customerPatchDto);
+            
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+            
+            _services.SaveChanges();
+        
+            var customerResponse = _services.GenerateCustomerDtoResponse(result.Data);
+
+            return Ok(customerResponse);
+        }
+
+        [HttpPatch("{id}/Addresses/{addressId}")]
+        public IActionResult UpdatePatch(int id, int? addressId, [FromBody] AddressPatchDto addressPatchDto)
+        {
+            var result = _services.UpdatePatchAddress(id, addressPatchDto, addressId);
             
             if (!result.Success)
             {
