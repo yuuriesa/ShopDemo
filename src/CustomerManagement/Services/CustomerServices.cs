@@ -245,14 +245,6 @@ namespace CustomerManagement.Services
                 var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
                 findCustomer.Addresses = new List<Address> { addressForUpdate };
             }
-            else if (addressId != null && addressPatchDto == null)
-            {
-                return ServiceResult<Customer>.ErrorResult("Address cannot be null", 400);
-            }
-            else if (addressId == null && addressPatchDto != null)
-            {
-                return ServiceResult<Customer>.ErrorResult("you cannot change the address without your addressId", 400);
-            }
 
             _repository.Update(id, findCustomer);
 
