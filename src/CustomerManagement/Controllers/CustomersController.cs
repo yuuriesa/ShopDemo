@@ -228,11 +228,17 @@ namespace CustomerManagement.Controllers
             var addressExistsInCustomer = findCustomer.Addresses.Contains(findAddress);
             if (!addressExistsInCustomer)
             {
-                return BadRequest("This address for this customer does not exist or does not belong to this customer");
+                return StatusCode(403, "This customer's address given for deletion does not belong to this customer");
+            }
+
+            if (findCustomer.Addresses.Count() == 1)
+            {
+                return Conflict("It is not possible to delete the last address. The customer must have at least one registered address");
             }
 
             _addressRepository.Delete(addressId);
             _addressRepository.SaveChanges();
+
             return NoContent();
         }
     }
