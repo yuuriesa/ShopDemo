@@ -13,6 +13,7 @@ namespace CustomerManagement.Services
         public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers);
         public bool VerifyDateOfBirth(DateTime customerDateOfBirth);
         public ServiceResult<Customer> Add(CustomerDto customer);
+        public ServiceResult<Customer> AddAddressInCustomer(int id, AddressDto addressDto);
         public ServiceResult<IEnumerable<Customer>> AddRange(IEnumerable<CustomerDto> customers);
         public ServiceResult<CustomerDtoResponse> Update(int id,  CustomerDto customerDto);
         public ServiceResult<Customer> UpdatePatchCustomer(int id, CustomerPatchDto customerPatchDto);

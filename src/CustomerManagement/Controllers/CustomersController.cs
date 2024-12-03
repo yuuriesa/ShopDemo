@@ -67,6 +67,24 @@ namespace CustomerManagement.Controllers
             return CreatedAtAction(actionName: nameof(GetById), routeValues: new {id = result.Data.CustomerId}, value: newCustomerResponse);
         }
 
+        [HttpPost("{id}/Addresses")]
+        public IActionResult AddAddressInCustomer(int id, [FromBody] AddressDto addressDto)
+        {
+            var result = _services.AddAddressInCustomer(id, addressDto);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+
+            _services.SaveChanges();
+            
+            var getCustomer = _services.GetById(id);
+            var newCustomerResponse = _services.GenerateCustomerDtoResponse(getCustomer);
+
+            return Created("", newCustomerResponse);
+        }
+
         [HttpPost("batch")]
         public async Task<IActionResult> AddListCustomers([FromBody] IEnumerable<CustomerDto> customers)
         {

@@ -16,6 +16,6 @@ namespace CustomerManagement.Models
         public string Email { get; set; }
         [Required(ErrorMessage = "Date of Birth is Required")]
         public DateOnly DateOfBirth { get; set; }
-        public ICollection<Address> Addresses { get; set; }
+        public ICollection<Address> Addresses { get; set; } = new List<Address>();
     }
 }

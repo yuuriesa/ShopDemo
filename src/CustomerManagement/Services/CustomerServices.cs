@@ -81,6 +81,30 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(newCustomer, 201);
         }
 
+        public ServiceResult<Customer> AddAddressInCustomer(int id, AddressDto addressDto)
+        {
+            var findCustomer = _repository.GetById(id);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+
+            var newAddress = new Address
+            {
+                ZipCode = addressDto.ZipCode,
+                Street = addressDto.Street,
+                Number = addressDto.Number,
+                Neighborhood = addressDto.Neighborhood,
+                AddressComplement = addressDto.AddressComplement,
+                City = addressDto.City,
+                State = addressDto.State,
+                Country = addressDto.Country
+            };
+
+            findCustomer.Addresses.Add(newAddress);
+
+            _repository.Update(id, findCustomer);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer, 201);
+        }
+
         public Customer GetByEmail(string email)
         {
             var findCustomerByEmail = _repository.GetByEmail(email);
