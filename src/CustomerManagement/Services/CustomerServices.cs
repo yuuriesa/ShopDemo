@@ -217,6 +217,30 @@ namespace CustomerManagement.Services
             return ServiceResult<CustomerDtoResponse>.SuccessResult(GenerateCustomerDtoResponse(findCustomer), 200);
         }
 
+        public ServiceResult<Customer> UpdateAddress(int id, AddressDto addressDto, int addressId)
+        {
+            var findCustomer = GetById(id);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+
+            var findAddress = _addressRepository.GetById((int)addressId);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 409);
+
+            findAddress.ZipCode = addressDto.ZipCode;
+            findAddress.Street = addressDto.Street;
+            findAddress.Number = addressDto.Number;
+            findAddress.Neighborhood = addressDto.Neighborhood;
+            findAddress.AddressComplement = addressDto.AddressComplement;
+            findAddress.City = addressDto.City;
+            findAddress.State = addressDto.State;
+            findAddress.Country = addressDto.Country;
+
+            
+            _addressRepository.Update(id, findAddress);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer);
+        }
+
         public ServiceResult<Customer> UpdatePatchCustomer(int id, CustomerPatchDto customerPatchDto)
         {
             var findCustomer = GetById(id);

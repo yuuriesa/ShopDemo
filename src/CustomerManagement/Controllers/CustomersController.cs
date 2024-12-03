@@ -150,6 +150,23 @@ namespace CustomerManagement.Controllers
             return Ok(result.Data);
         }
 
+        [HttpPut("{id}/Addresses/{addressId}")]
+        public IActionResult UpdateAddress(int id, [FromBody] AddressDto addressDto, int addressId)
+        {
+            var result = _services.UpdateAddress(id, addressDto, addressId);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+
+            _services.SaveChanges();
+
+            var CustomerDtoResponse = _services.GenerateCustomerDtoResponse(result.Data);
+
+            return Ok(CustomerDtoResponse);
+        }
+
         [HttpPatch("{id}")]
         public IActionResult UpdatePatch(int id, [FromBody] CustomerPatchDto customerPatchDto)
         {
