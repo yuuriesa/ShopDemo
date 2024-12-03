@@ -50,6 +50,18 @@ namespace CustomerManagement.Controllers
             return Ok(newCustomerResponse);
         }
 
+        [HttpGet("{id}/Addresses")]
+        public IActionResult GetCustomerAddresses(int id)
+        {
+            var findCustomer = _services.GetById(id);
+
+            if (findCustomer == null) return NotFound();
+
+            var customerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
+
+            return Ok(customerResponse.Addresses);
+        }
+
         [HttpPost]
         public IActionResult Add([FromBody] CustomerDto customer)
         {
@@ -78,7 +90,7 @@ namespace CustomerManagement.Controllers
             }
 
             _services.SaveChanges();
-            
+
             var getCustomer = _services.GetById(id);
             var newCustomerResponse = _services.GenerateCustomerDtoResponse(getCustomer);
 
