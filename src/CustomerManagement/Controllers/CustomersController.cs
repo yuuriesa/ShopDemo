@@ -16,12 +16,15 @@ namespace CustomerManagement.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly ICustomerRepository _repository;
         private readonly ICustomerServices _services;
+        private IAddressRepository _addressRepository;
 
-        public CustomersController(ICustomerRepository repository, ICustomerServices services, ApplicationDbContext dbContext)
+        public CustomersController(ICustomerRepository repository, ICustomerServices services,
+                                   ApplicationDbContext dbContext, IAddressRepository addressRepository)
         {
             _repository = repository;
             _services = services;
             _dbContext = dbContext;
+            _addressRepository = addressRepository;
         }
 
         [HttpGet]
@@ -193,6 +196,26 @@ namespace CustomerManagement.Controllers
 
             _services.SaveChanges();
                        
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/Addresses/{addressId}")]
+        public IActionResult DeleteAddress(int id, int addressId)
+        {
+            var findCustomer = _services.GetById(id);
+            if (findCustomer == null) return NotFound("Customer not found");
+
+            var findAddress = _addressRepository.GetById(addressId);
+            if (findAddress == null) return NotFound("Address not found");
+
+            var addressExistsInCustomer = findCustomer.Addresses.Contains(findAddress);
+            if (!addressExistsInCustomer)
+            {
+                return BadRequest("This address for this customer does not exist or does not belong to this customer");
+            }
+
+            _addressRepository.Delete(addressId);
+            _addressRepository.SaveChanges();
             return NoContent();
         }
     }
