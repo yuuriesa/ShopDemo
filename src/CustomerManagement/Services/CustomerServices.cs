@@ -224,7 +224,7 @@ namespace CustomerManagement.Services
 
             var findAddress = _addressRepository.GetById((int)addressId);
             if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 403);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
 
             findAddress.ZipCode = addressDto.ZipCode;
             findAddress.Street = addressDto.Street;
@@ -286,7 +286,7 @@ namespace CustomerManagement.Services
             var findAddress = _addressRepository.GetById((int)addressId);
 
             if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The Address id does not belong to this client.", 403);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
 
             var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
             findAddress =  addressForUpdate;
