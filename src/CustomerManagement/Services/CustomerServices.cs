@@ -308,6 +308,31 @@ namespace CustomerManagement.Services
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
         }
 
+        public ServiceResult<Customer> DeleteAddress(int id, int addressId)
+        {
+            var findCustomer = _repository.GetById(id);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found", 404);
+
+            var findAddress = _addressRepository.GetById(addressId);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
+
+            var addressExistsInCustomer = findCustomer.Addresses.Contains(findAddress);
+            if (!addressExistsInCustomer)
+            {
+                return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
+            }
+
+            if (findCustomer.Addresses.Count() == 1)
+            {
+                return ServiceResult<Customer>.ErrorResult("It is not possible to delete the last address. The customer must have at least one registered address", 422);
+            }
+
+
+            _addressRepository.Delete(addressId);
+
+            return ServiceResult<Customer>.SuccessResult(findCustomer);
+        }
+
         public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, AddressPatchDto addressPatchDto)
         {
                 if (addressPatchDto.ZipCode != null)

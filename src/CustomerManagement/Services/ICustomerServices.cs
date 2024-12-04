@@ -20,6 +20,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> UpdatePatchCustomer(int id, CustomerPatchDto customerPatchDto);
         public ServiceResult<Customer> UpdatePatchAddress(int id, AddressPatchDto addressPatchDto, int addressId);
         public ServiceResult<Customer> Delete(int id);
+        public ServiceResult<Customer> DeleteAddress(int id, int addressId);
         public Address CheckWhichPropertiesToChangeAddressUpdatePatch(Address address, AddressPatchDto addressPatchDto);
         public CustomerDtoResponse GenerateCustomerDtoResponse(Customer customer);
         public Customer GenerateListAddressForCustomerAndReturnCustomer(CustomerDto customer);

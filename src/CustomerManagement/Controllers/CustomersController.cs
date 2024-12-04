@@ -219,24 +219,12 @@ namespace CustomerManagement.Controllers
         [HttpDelete("{id}/Addresses/{addressId}")]
         public IActionResult DeleteAddress(int id, int addressId)
         {
-            var findCustomer = _services.GetById(id);
-            if (findCustomer == null) return NotFound("Customer not found");
+            var result = _services.DeleteAddress(id, addressId);
 
-            var findAddress = _addressRepository.GetById(addressId);
-            if (findAddress == null) return NotFound("Address not found");
-
-            var addressExistsInCustomer = findCustomer.Addresses.Contains(findAddress);
-            if (!addressExistsInCustomer)
+            if (!result.Success)
             {
-                return StatusCode(404, "The requested resource was not found.");
+                return StatusCode(result.StatusCode, result.Message);
             }
-
-            if (findCustomer.Addresses.Count() == 1)
-            {
-                return UnprocessableEntity("It is not possible to delete the last address. The customer must have at least one registered address");
-            }
-
-            _addressRepository.Delete(addressId);
             _addressRepository.SaveChanges();
 
             return NoContent();
