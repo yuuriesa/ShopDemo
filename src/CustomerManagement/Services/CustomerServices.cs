@@ -207,6 +207,11 @@ namespace CustomerManagement.Services
             if (findCustomer.Email != customerDto.Email)
                     findCustomer.Email = customerDto.Email;
 
+            foreach (var address in findCustomer.Addresses)
+            {
+                _addressRepository.Delete(address.AddressId);
+            }
+
             findCustomer.CustomerId = id;
             findCustomer.FirstName = customerDto.FirstName;
             findCustomer.LastName = customerDto.LastName;
@@ -303,6 +308,11 @@ namespace CustomerManagement.Services
 
             if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
 
+            foreach (var address in findCustomer.Addresses)
+            {
+                _addressRepository.Delete(address.AddressId);
+            }
+
             _repository.Delete(id);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer, 204);
@@ -322,11 +332,11 @@ namespace CustomerManagement.Services
                 return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
             }
 
-            if (findCustomer.Addresses.Count() == 1)
+            var allAddresses = _addressRepository.GetAllAddressesByIdCustomer(id);
+            if (allAddresses.Count() == 1)
             {
                 return ServiceResult<Customer>.ErrorResult("It is not possible to delete the last address. The customer must have at least one registered address", 422);
             }
-
 
             _addressRepository.Delete(addressId);
 
