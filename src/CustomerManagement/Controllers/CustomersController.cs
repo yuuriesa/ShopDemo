@@ -151,7 +151,7 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPut("{id}/Addresses/{addressId}")]
-        public IActionResult UpdateAddress(int id, [FromBody] AddressDto addressDto, int addressId)
+        public IActionResult Update(int id, [FromBody] AddressDto addressDto, int addressId)
         {
             var result = _services.UpdateAddress(id, addressDto, addressId);
 
@@ -217,7 +217,7 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpDelete("{id}/Addresses/{addressId}")]
-        public IActionResult DeleteAddress(int id, int addressId)
+        public IActionResult Delete(int id, int addressId)
         {
             var result = _services.DeleteAddress(id, addressId);
 
