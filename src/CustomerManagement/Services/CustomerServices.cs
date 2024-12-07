@@ -29,13 +29,8 @@ namespace CustomerManagement.Services
 
         public IEnumerable<Customer> GetAll(PaginationFilter validFilter)
         {
-            List<Customer> customersResponses = new List<Customer>();
             var allCustomers = _repository.GetAll(validFilter).Include(c => c.Addresses);
-            foreach (var customer in allCustomers)
-            {
-                customersResponses.Add(customer);
-            };
-            return customersResponses;
+            return allCustomers;
         }
 
         public Customer GetById(int id)
