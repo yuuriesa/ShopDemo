@@ -20,4 +20,14 @@ namespace CustomerManagement.Models
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
     }
+
+    public class CustomerPatchDtoResponse
+    {
+        public int CustomerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        [DataType(DataType.Date)]
+        public DateOnly DateOfBirth { get; set; }
+    }
 }

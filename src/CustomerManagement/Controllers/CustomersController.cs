@@ -179,7 +179,14 @@ namespace CustomerManagement.Controllers
             
             _services.SaveChanges();
         
-            var customerResponse = _services.GenerateCustomerDtoResponse(result.Data);
+            var customerResponse = new CustomerPatchDtoResponse
+            {
+                CustomerId = result.Data.CustomerId,
+                FirstName = result.Data.FirstName,
+                LastName = result.Data.LastName!,
+                Email = result.Data.Email,
+                DateOfBirth = result.Data.DateOfBirth
+            };
 
             return Ok(customerResponse);
         }
