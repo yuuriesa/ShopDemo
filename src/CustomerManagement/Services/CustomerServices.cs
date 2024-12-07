@@ -82,6 +82,8 @@ namespace CustomerManagement.Services
             var findCustomer = _repository.GetById(id);
             if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
 
+            var getAddressesByCustomerId = _addressRepository.GetAllAddressesByIdCustomer(id);
+
             var newAddress = new Address
             {
                 ZipCode = addressDto.ZipCode,
@@ -93,6 +95,23 @@ namespace CustomerManagement.Services
                 State = addressDto.State,
                 Country = addressDto.Country
             };
+
+            // Vir aqui para verificar se o endereço já existe - ajustar
+            foreach (var address in getAddressesByCustomerId)
+            {
+                var addressExists = address.ZipCode == newAddress.ZipCode &&
+                                    address.Street == newAddress.Street &&
+                                    address.Number == newAddress.Number &&
+                                    address.Neighborhood == newAddress.Neighborhood &&
+                                    address.AddressComplement == newAddress.AddressComplement &&
+                                    address.City == newAddress.City &&
+                                    address.State == newAddress.State &&
+                                    address.Country == newAddress.Country;
+                if (addressExists)
+                {
+                    return ServiceResult<Customer>.ErrorResult("This address already exists", 409);
+                }
+            }
 
             findCustomer.Addresses.Add(newAddress);
 
