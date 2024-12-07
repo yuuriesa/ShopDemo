@@ -162,9 +162,7 @@ namespace CustomerManagement.Controllers
 
             _services.SaveChanges();
 
-            var CustomerDtoResponse = _services.GenerateCustomerDtoResponse(result.Data);
-
-            return Ok(CustomerDtoResponse);
+            return Ok(addressDto);
         }
 
         [HttpPatch("{id}")]
@@ -202,10 +200,8 @@ namespace CustomerManagement.Controllers
             }
             
             _services.SaveChanges();
-        
-            var customerResponse = _services.GenerateCustomerDtoResponse(result.Data);
 
-            return Ok(customerResponse);
+            return Ok(addressPatchDto);
         }
 
         [HttpDelete("{id}")]
