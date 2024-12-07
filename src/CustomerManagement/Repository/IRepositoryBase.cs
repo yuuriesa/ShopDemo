@@ -4,7 +4,7 @@ namespace CustomerManagement.Repository
 {
     public interface IRepositoryBase<TEntity> where TEntity : class
     {
-        public IEnumerable<TEntity> GetAll(PaginationFilter validFilter);
+        public IQueryable<TEntity> GetAll(PaginationFilter validFilter);
         public TEntity GetById(int id);
         public TEntity Add(TEntity entity);
         public void AddRange(IEnumerable<TEntity> entities);

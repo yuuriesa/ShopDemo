@@ -27,12 +27,11 @@ namespace CustomerManagement.Repository
             dbSetEntity.Remove(dbSetEntity.Find(id)!);
         }
 
-        public IEnumerable<TEntity> GetAll(PaginationFilter validFilter)
+        public IQueryable<TEntity> GetAll(PaginationFilter validFilter)
         {
             var pagedData = dbSetEntity
                 .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-                .Take(validFilter.PageSize)
-                .ToArray();
+                .Take(validFilter.PageSize);
             
             return pagedData;
         }

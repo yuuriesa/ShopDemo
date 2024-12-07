@@ -40,6 +40,7 @@ namespace CustomerManagement.Data
 
                 entity.Property(c => c.DateOfBirth)
                     .IsRequired()
+                    .HasDefaultValue(DateOnly.FromDateTime(DateTime.Now))
                     .HasColumnName("DateOfBirth");
 
                 entity.HasIndex(c => c.Email)

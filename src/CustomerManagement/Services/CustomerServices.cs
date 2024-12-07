@@ -3,6 +3,7 @@ using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using CustomerManagement.Utils;
 using CustomerManagement.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerManagement.Services
 {
@@ -29,11 +30,9 @@ namespace CustomerManagement.Services
         public IEnumerable<Customer> GetAll(PaginationFilter validFilter)
         {
             List<Customer> customersResponses = new List<Customer>();
-            var allCustomers = _repository.GetAll(validFilter);
+            var allCustomers = _repository.GetAll(validFilter).Include(c => c.Addresses);
             foreach (var customer in allCustomers)
             {
-                var findAddress = _addressRepository.GetAllAddressesByIdCustomer(customer.CustomerId);
-                customer.Addresses = findAddress.ToList();
                 customersResponses.Add(customer);
             };
             return customersResponses;
