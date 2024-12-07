@@ -403,6 +403,7 @@ namespace CustomerManagement.Services
 
             var newCustomerResponse = new CustomerDtoResponse
             {
+                CustomerId = customer.CustomerId,
                 FirstName = customer.FirstName,
                 LastName = customer.LastName, 
                 Email = customer.Email, 
