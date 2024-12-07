@@ -73,6 +73,8 @@ namespace CustomerManagement.Services
 
             if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult("This email exists", 409);
 
+            if (customer.Addresses.Count == 0) return ServiceResult<Customer>.ErrorResult("The customer must have at least one registered address", 422);
+
             var newCustomer = GenerateListAddressForCustomerAndReturnCustomer(customer);
 
             _repository.Add(newCustomer);
@@ -137,7 +139,12 @@ namespace CustomerManagement.Services
                 if (findCustomerByEmail != null)
                 {
                     return ServiceResult<IEnumerable<Customer>>.ErrorResult($"This email: '{customer.Email}' exists", 409);
-                }       
+                }
+
+                if (customer.Addresses.Count == 0)
+                {
+                    return ServiceResult<IEnumerable<Customer>>.ErrorResult("The customer must have at least one registered address", 422);
+                }
             }
 
 
@@ -202,6 +209,8 @@ namespace CustomerManagement.Services
 
             if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
                 return ServiceResult<CustomerDtoResponse>.ErrorResult("This Email exists.", 409);
+
+            if (customerDto.Addresses.Count == 0) return ServiceResult<CustomerDtoResponse>.ErrorResult("The customer must have at least one registered address", 422);
 
             if (findCustomer.Email != customerDto.Email)
                     findCustomer.Email = customerDto.Email;
