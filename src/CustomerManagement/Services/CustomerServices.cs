@@ -159,7 +159,16 @@ namespace CustomerManagement.Services
                     Addresses = new List<Address>()
                 };
 
-                foreach (var address in customer.Addresses)
+                var nonDuplicateAddresses = customer.Addresses
+                    .GroupBy(a => new {
+                        a.ZipCode, a.Street,
+                        a.Number, a.Neighborhood,
+                        a.AddressComplement, a.City,
+                        a.State, a.Country})
+                    .Select(group => group.First())
+                    .ToArray();
+
+                foreach (var address in nonDuplicateAddresses)
                 {
                     var newAddress = new Address
                     {
@@ -451,6 +460,13 @@ namespace CustomerManagement.Services
                 Email = customer.Email, 
                 DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
                 Addresses = addresses
+                    .GroupBy(a => new {
+                        a.ZipCode, a.Street,
+                        a.Number, a.Neighborhood,
+                        a.AddressComplement, a.City,
+                        a.State, a.Country})
+                    .Select(group => group.First())
+                    .ToArray()
              };
 
             return newCustomer;
