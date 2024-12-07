@@ -466,7 +466,7 @@ namespace CustomerManagement.Services
                         a.AddressComplement, a.City,
                         a.State, a.Country})
                     .Select(group => group.First())
-                    .ToArray()
+                    .ToList()
              };
 
             return newCustomer;
