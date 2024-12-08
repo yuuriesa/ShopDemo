@@ -62,13 +62,13 @@ namespace CustomerManagement.Services
         {
             var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
 
-            if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+            if (dateIsValid) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.DateOfBirthError, 400);
 
             var findCustomerByEmail = GetByEmail(customer.Email);
 
-            if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult("This email exists", 409);
+            if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.EmailExistsError, 409);
 
-            if (customer.Addresses.Count == 0) return ServiceResult<Customer>.ErrorResult("The customer must have at least one registered address", 422);
+            if (customer.Addresses.Count == 0) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
 
             var newCustomer = GenerateListAddressForCustomerAndReturnCustomer(customer);
 
@@ -80,7 +80,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> AddAddressInCustomer(int id, AddressDto addressDto)
         {
             var findCustomer = _repository.GetById(id);
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             var getAddressesByCustomerId = _addressRepository.GetAllAddressesByIdCustomer(id);
 
@@ -109,7 +109,7 @@ namespace CustomerManagement.Services
                                     address.Country == newAddress.Country;
                 if (addressExists)
                 {
-                    return ServiceResult<Customer>.ErrorResult("This address already exists", 409);
+                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressExistsError, 409);
                 }
             }
 
