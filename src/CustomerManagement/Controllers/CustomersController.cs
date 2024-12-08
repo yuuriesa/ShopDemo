@@ -30,7 +30,7 @@ namespace CustomerManagement.Controllers
         [HttpGet]
         public IActionResult GetAll(int pageNumber = 1, int pageSize = 10)
         {
-            if (pageNumber < 0 || pageSize < 0) return BadRequest("The pagination parameters 'pageSize' and 'pageNumber' must be positive numbers. Check the values ​​provided.");
+            if (pageNumber < 0 || pageSize < 0) return BadRequest(ResponseMessagesCustomers.CustomerPaginationError);
 
             var validFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
 
@@ -46,7 +46,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _services.GetById(id);
 
-            if (findCustomer == null) return NotFound("Customer not found");
+            if (findCustomer == null) return NotFound(ResponseMessagesCustomers.CustomerNotFoundMessage);
 
             var newCustomerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
 
@@ -58,7 +58,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _services.GetById(id);
 
-            if (findCustomer == null) return NotFound("Customer not found");
+            if (findCustomer == null) return NotFound(ResponseMessagesCustomers.CustomerNotFoundMessage);
 
             var customerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
 
