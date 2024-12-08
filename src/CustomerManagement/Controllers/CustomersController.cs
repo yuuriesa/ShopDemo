@@ -94,10 +94,7 @@ namespace CustomerManagement.Controllers
 
             _services.SaveChanges();
 
-            var getCustomer = _services.GetById(id);
-            var newCustomerResponse = _services.GenerateCustomerDtoResponse(getCustomer);
-
-            return Created("", newCustomerResponse);
+            return Created("", addressDto);
         }
 
         [HttpPost("batch")]
