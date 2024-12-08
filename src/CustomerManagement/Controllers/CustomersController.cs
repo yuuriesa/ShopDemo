@@ -46,7 +46,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _services.GetById(id);
 
-            if (findCustomer == null) return NotFound();
+            if (findCustomer == null) return NotFound("Customer not found");
 
             var newCustomerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
 
@@ -58,7 +58,7 @@ namespace CustomerManagement.Controllers
         {
             var findCustomer = _services.GetById(id);
 
-            if (findCustomer == null) return NotFound();
+            if (findCustomer == null) return NotFound("Customer not found");
 
             var customerResponse = _services.GenerateCustomerDtoResponse(findCustomer);
 
