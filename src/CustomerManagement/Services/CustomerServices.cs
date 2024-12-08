@@ -139,25 +139,25 @@ namespace CustomerManagement.Services
 
             if (duplicateEmails.Any())
             {
-                return ServiceResult<IEnumerable<Customer>>.ErrorResult($"Duplicate email(s) found in input: {string.Join(", ", duplicateEmails)}.", 400);
+                return ServiceResult<IEnumerable<Customer>>.ErrorResult($"{ResponseMessagesCustomers.DuplicateEmailFoundError}: {string.Join(", ", duplicateEmails)}.", 400);
             }
             
             foreach (var customer in customers)
             {
                 var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
 
-                if (dateIsValid) return ServiceResult<IEnumerable<Customer>>.ErrorResult("You cannot put the date with the day after today.", 400);
+                if (dateIsValid) return ServiceResult<IEnumerable<Customer>>.ErrorResult(ResponseMessagesCustomers.DateOfBirthError, 400);
 
                 var findCustomerByEmail = GetByEmail(customer.Email);
 
                 if (findCustomerByEmail != null)
                 {
-                    return ServiceResult<IEnumerable<Customer>>.ErrorResult($"This email: '{customer.Email}' exists", 409);
+                    return ServiceResult<IEnumerable<Customer>>.ErrorResult($"{ResponseMessagesCustomers.ThisEmailExistsError}: '{customer.Email}'", 409);
                 }
 
                 if (customer.Addresses.Count == 0)
                 {
-                    return ServiceResult<IEnumerable<Customer>>.ErrorResult("The customer must have at least one registered address", 422);
+                    return ServiceResult<IEnumerable<Customer>>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
                 }
             }
 
@@ -222,18 +222,18 @@ namespace CustomerManagement.Services
         {
             var dateIsValid = VerifyDateOfBirth(customerDto.DateOfBirth);
 
-            if (dateIsValid) return ServiceResult<CustomerDtoResponse>.ErrorResult("You cannot put the date with the day after today.", 400);
+            if (dateIsValid) return ServiceResult<CustomerDtoResponse>.ErrorResult(ResponseMessagesCustomers.DateOfBirthError, 400);
 
             var findCustomer = GetById(id);
 
-            if (findCustomer == null) return ServiceResult<CustomerDtoResponse>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<CustomerDtoResponse>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             var findCustomerByEmail = GetByEmail(customerDto.Email);
 
             if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
-                return ServiceResult<CustomerDtoResponse>.ErrorResult("This Email exists.", 409);
+                return ServiceResult<CustomerDtoResponse>.ErrorResult(ResponseMessagesCustomers.ThisEmailExistsError, 409);
 
-            if (customerDto.Addresses.Count == 0) return ServiceResult<CustomerDtoResponse>.ErrorResult("The customer must have at least one registered address", 422);
+            if (customerDto.Addresses.Count == 0) return ServiceResult<CustomerDtoResponse>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
 
             if (findCustomer.Email != customerDto.Email)
                     findCustomer.Email = customerDto.Email;
@@ -256,11 +256,11 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> UpdateAddress(int id, AddressDto addressDto, int addressId)
         {
             var findCustomer = GetById(id);
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             var findAddress = _addressRepository.GetById((int)addressId);
-            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressNotFoundMessage, 404);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ResourceWasNotFound, 404);
 
             findAddress.ZipCode = addressDto.ZipCode;
             findAddress.Street = addressDto.Street;
