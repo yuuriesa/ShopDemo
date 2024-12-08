@@ -281,14 +281,14 @@ namespace CustomerManagement.Services
         {
             var findCustomer = GetById(id);
 
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             if (customerPatchDto.Email != null)
             {
                 var findCustomerByEmail = GetByEmail(customerPatchDto.Email);
 
                 if (findCustomerByEmail != null && findCustomerByEmail.CustomerId != id)
-                    return ServiceResult<Customer>.ErrorResult("This Email exists", 409);
+                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ThisEmailExistsError, 409);
 
                 if (findCustomer.Email != customerPatchDto.Email)
                     findCustomer.Email = customerPatchDto.Email;
@@ -297,7 +297,7 @@ namespace CustomerManagement.Services
             {
                 var dateIsValid = VerifyDateOfBirth((DateTime)customerPatchDto.DateOfBirth);
 
-                if (dateIsValid) return ServiceResult<Customer>.ErrorResult("You cannot put the date with the day after today.", 400);
+                if (dateIsValid) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.DateOfBirthError, 400);
                 findCustomer.DateOfBirth = DateOnly.FromDateTime((DateTime)customerPatchDto.DateOfBirth);
             }
             if (customerPatchDto.FirstName != null)
@@ -317,12 +317,12 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> UpdatePatchAddress(int id, AddressPatchDto addressPatchDto, int addressId)
         {
             var findCustomer = GetById(id);
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
         
             var findAddress = _addressRepository.GetById((int)addressId);
 
-            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
-            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressNotFoundMessage, 404);
+            if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ResourceWasNotFound, 404);
 
             var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
             findAddress =  addressForUpdate;
@@ -337,7 +337,7 @@ namespace CustomerManagement.Services
         {
             var findCustomer = GetById(id);
 
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found.", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             foreach (var address in findCustomer.Addresses)
             {
@@ -352,21 +352,21 @@ namespace CustomerManagement.Services
         public ServiceResult<Customer> DeleteAddress(int id, int addressId)
         {
             var findCustomer = _repository.GetById(id);
-            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult("Customer not found", 404);
+            if (findCustomer == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
 
             var findAddress = _addressRepository.GetById(addressId);
-            if (findAddress == null) return ServiceResult<Customer>.ErrorResult("Address not found", 404);
+            if (findAddress == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressNotFoundMessage, 404);
 
             var addressExistsInCustomer = findCustomer.Addresses.Contains(findAddress);
             if (!addressExistsInCustomer)
             {
-                return ServiceResult<Customer>.ErrorResult("The requested resource was not found.", 404);
+                return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ResourceWasNotFound, 404);
             }
 
             var allAddresses = _addressRepository.GetAllAddressesByIdCustomer(id);
             if (allAddresses.Count() == 1)
             {
-                return ServiceResult<Customer>.ErrorResult("It is not possible to delete the last address. The customer must have at least one registered address", 422);
+                return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ItsNotPossibleToDeleteTheLastAddress, 422);
             }
 
             _addressRepository.Delete(addressId);
