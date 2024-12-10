@@ -142,6 +142,13 @@ namespace CustomerManagement.Controllers
                 return StatusCode(result.StatusCode, result.Message);
             }
 
+            var checkIfTheCustomerHasARepeatingAddressInList = _services.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
+
+            if (checkIfTheCustomerHasARepeatingAddressInList)
+            {
+            return StatusCode(422, ResponseMessagesCustomers.AddressAlreadyBelongsToCustomerError);
+            }
+
             _services.SaveChanges();
         
             return Ok(result.Data);
