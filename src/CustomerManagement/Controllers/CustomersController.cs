@@ -195,10 +195,49 @@ namespace CustomerManagement.Controllers
             {
                 return StatusCode(result.StatusCode, result.Message);
             }
-            
-            _services.SaveChanges();
 
-            return Ok(addressPatchDto);
+            var listAddressDto = new List<AddressDto>();
+
+            foreach (var address in result.Data.Addresses)
+            {
+                var addressDto = new AddressDto
+                {
+                    ZipCode = address.ZipCode,
+                    Street = address.Street,
+                    Number = address.Number,
+                    AddressComplement = address.AddressComplement,
+                    Neighborhood = address.Neighborhood,
+                    City = address.City,
+                    State = address.State,
+                    Country = address.Country
+                };
+
+                listAddressDto.Add(addressDto);
+            }
+
+             var checkIfTheCustomerHasARepeatingAddressInList = _services.CheckIfTheCustomerHasARepeatingAddressInList(listAddressDto);
+
+             if (checkIfTheCustomerHasARepeatingAddressInList)
+             {
+                return StatusCode(422, ResponseMessagesCustomers.AddressAlreadyBelongsToCustomerError);
+             }
+
+            _services.SaveChanges();
+            
+            var addressById = _addressRepository.GetById(addressId);
+            var addressResponse = new AddressDto
+            {
+                ZipCode = addressById.ZipCode,
+                Street = addressById.Street,
+                Number = addressById.Number,
+                AddressComplement = addressById.AddressComplement,
+                Neighborhood = addressById.Neighborhood,
+                City = addressById.City,
+                State = addressById.State,
+                Country = addressById.Country
+            };
+
+            return Ok(addressResponse);
         }
 
         [HttpDelete("{id}")]

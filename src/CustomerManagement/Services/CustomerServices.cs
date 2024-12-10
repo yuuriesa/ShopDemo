@@ -70,7 +70,7 @@ namespace CustomerManagement.Services
 
             if (customer.Addresses.Count == 0) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
 
-            var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInRequest(customer.Addresses);
+            var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInList(customer.Addresses);
 
             if (checkIfTheCustomerHasARepeatingAddress)
             {
@@ -105,7 +105,7 @@ namespace CustomerManagement.Services
 
             var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInDatabase(getAddressesByCustomerId, addressDto);
 
-            if (checkIfTheCustomerHasARepeatingAddress.StatusCode == 409)
+            if (checkIfTheCustomerHasARepeatingAddress.StatusCode == 422)
             {
                 return ServiceResult<Customer>.ErrorResult(checkIfTheCustomerHasARepeatingAddress.Message, 422);
             }
@@ -131,14 +131,14 @@ namespace CustomerManagement.Services
                                     address.Country == addressDto.Country;
                 if (addressExists)
                 {
-                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressExistsError, 409);
+                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressAlreadyBelongsToCustomerError, 422);
                 }
             }
 
             return ServiceResult<Customer>.SuccessResult(null!, 200);
         }
 
-        public bool CheckIfTheCustomerHasARepeatingAddressInRequest(IEnumerable<AddressDto> addresses)
+        public bool CheckIfTheCustomerHasARepeatingAddressInList(IEnumerable<AddressDto> addresses)
         {
             List<AddressDto> listAddresses = new List<AddressDto>();
 
@@ -202,7 +202,7 @@ namespace CustomerManagement.Services
                     return ServiceResult<IEnumerable<Customer>>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
                 }
 
-                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInRequest(customer.Addresses);
+                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInList(customer.Addresses);
 
                 if (checkIfTheCustomerHasARepeatingAddress)
                 {
@@ -302,6 +302,15 @@ namespace CustomerManagement.Services
             if (findAddress == null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressNotFoundMessage, 404);
             if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ResourceWasNotFound, 404);
 
+            var getAddressesByCustomerId = _addressRepository.GetAllAddressesByIdCustomer(id);
+
+            var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInDatabase(getAddressesByCustomerId, addressDto);
+
+            if (checkIfTheCustomerHasARepeatingAddress.StatusCode == 422)
+            {
+                return ServiceResult<Customer>.ErrorResult(checkIfTheCustomerHasARepeatingAddress.Message, 422);
+            }
+
             findAddress.ZipCode = addressDto.ZipCode;
             findAddress.Street = addressDto.Street;
             findAddress.Number = addressDto.Number;
@@ -365,9 +374,9 @@ namespace CustomerManagement.Services
             if (findAddress.CustomerId != findCustomer.CustomerId) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.ResourceWasNotFound, 404);
 
             var addressForUpdate = CheckWhichPropertiesToChangeAddressUpdatePatch(findAddress, addressPatchDto);
+
             findAddress =  addressForUpdate;
-
-
+            
             _addressRepository.Update(id, findAddress);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer);
