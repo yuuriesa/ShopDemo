@@ -70,6 +70,13 @@ namespace CustomerManagement.Services
 
             if (customer.Addresses.Count == 0) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
 
+            var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInRequest(customer.Addresses);
+
+            if (checkIfTheCustomerHasARepeatingAddress)
+            {
+                return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.DuplicateAddressExistsError, 422);
+            }
+
             var newCustomer = GenerateListAddressForCustomerAndReturnCustomer(customer);
 
             _repository.Add(newCustomer);
@@ -96,21 +103,11 @@ namespace CustomerManagement.Services
                 Country = addressDto.Country
             };
 
-            // Vir aqui para verificar se o endereço já existe - ajustar
-            foreach (var address in getAddressesByCustomerId)
+            var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInDatabase(getAddressesByCustomerId, addressDto);
+
+            if (checkIfTheCustomerHasARepeatingAddress.StatusCode == 409)
             {
-                var addressExists = address.ZipCode == newAddress.ZipCode &&
-                                    address.Street == newAddress.Street &&
-                                    address.Number == newAddress.Number &&
-                                    address.Neighborhood == newAddress.Neighborhood &&
-                                    address.AddressComplement == newAddress.AddressComplement &&
-                                    address.City == newAddress.City &&
-                                    address.State == newAddress.State &&
-                                    address.Country == newAddress.Country;
-                if (addressExists)
-                {
-                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressExistsError, 409);
-                }
+                return ServiceResult<Customer>.ErrorResult(checkIfTheCustomerHasARepeatingAddress.Message, 422);
             }
 
             findCustomer.Addresses.Add(newAddress);
@@ -118,6 +115,51 @@ namespace CustomerManagement.Services
             _repository.Update(id, findCustomer);
 
             return ServiceResult<Customer>.SuccessResult(findCustomer, 201);
+        }
+
+        public ServiceResult<Customer> CheckIfTheCustomerHasARepeatingAddressInDatabase(IEnumerable<Address> addresses, AddressDto addressDto)
+        {
+            foreach (var address in addresses)
+            {
+                var addressExists = address.ZipCode == addressDto.ZipCode &&
+                                    address.Street == addressDto.Street &&
+                                    address.Number == addressDto.Number &&
+                                    address.Neighborhood == addressDto.Neighborhood &&
+                                    address.AddressComplement == addressDto.AddressComplement &&
+                                    address.City == addressDto.City &&
+                                    address.State == addressDto.State &&
+                                    address.Country == addressDto.Country;
+                if (addressExists)
+                {
+                    return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.AddressExistsError, 409);
+                }
+            }
+
+            return ServiceResult<Customer>.SuccessResult(null!, 200);
+        }
+
+        public bool CheckIfTheCustomerHasARepeatingAddressInRequest(IEnumerable<AddressDto> addresses)
+        {
+            List<AddressDto> listAddresses = new List<AddressDto>();
+
+            foreach (var address in addresses)
+            {
+                var addressExists = listAddresses.Any(a => a.ZipCode == address.ZipCode &&
+                                    a.Street == address.Street &&
+                                    a.Number == address.Number &&
+                                    a.Neighborhood == address.Neighborhood &&
+                                    a.AddressComplement == address.AddressComplement &&
+                                    a.City == address.City &&
+                                    a.State == address.State &&
+                                    a.Country == address.Country);
+                if (addressExists)
+                {
+                    return true;
+                }
+                listAddresses.Add(address);
+            }
+
+            return false;
         }
 
         public Customer GetByEmail(string email)
@@ -159,6 +201,13 @@ namespace CustomerManagement.Services
                 {
                     return ServiceResult<IEnumerable<Customer>>.ErrorResult(ResponseMessagesCustomers.MinimumRegisteredAddressError, 422);
                 }
+
+                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInRequest(customer.Addresses);
+
+                if (checkIfTheCustomerHasARepeatingAddress)
+                {
+                    return ServiceResult<IEnumerable<Customer>>.ErrorResult(ResponseMessagesCustomers.DuplicateAddressExistsError, 422);
+                } 
             }
 
 
@@ -173,16 +222,7 @@ namespace CustomerManagement.Services
                     Addresses = new List<Address>()
                 };
 
-                var nonDuplicateAddresses = customer.Addresses
-                    .GroupBy(a => new {
-                        a.ZipCode, a.Street,
-                        a.Number, a.Neighborhood,
-                        a.AddressComplement, a.City,
-                        a.State, a.Country})
-                    .Select(group => group.First())
-                    .ToArray();
-
-                foreach (var address in nonDuplicateAddresses)
+                foreach (var address in customer.Addresses)
                 {
                     var newAddress = new Address
                     {
@@ -474,13 +514,6 @@ namespace CustomerManagement.Services
                 Email = customer.Email, 
                 DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
                 Addresses = addresses
-                    .GroupBy(a => new {
-                        a.ZipCode, a.Street,
-                        a.Number, a.Neighborhood,
-                        a.AddressComplement, a.City,
-                        a.State, a.Country})
-                    .Select(group => group.First())
-                    .ToList()
              };
 
             return newCustomer;
