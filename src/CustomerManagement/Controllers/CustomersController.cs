@@ -132,6 +132,39 @@ namespace CustomerManagement.Controllers
             }
         }
 
+        [HttpPost("batch2")]
+        public async Task<IActionResult> AddListCustomers2([FromBody] IEnumerable<CustomerDto> customers)
+        {
+            var listCustomersForResponse = new List<CustomerDtoResponse>();
+            var listCustomersForResult = new List<Customer>();
+            var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                if (customers.Count() == 0) return NoContent();
+
+                var result = _services.AddRange2(customers);
+                listCustomersForResult = result.Data.ToList();
+                
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception err)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = err.Message });
+            }
+
+
+            foreach (var customer in listCustomersForResult)
+            {
+                var getCustomerByEmail = _services.GetByEmail(customer.Email);
+                var customerDto = _services.GenerateCustomerDtoResponse(getCustomerByEmail);
+                listCustomersForResponse.Add(customerDto);
+            }
+
+            return Created("", listCustomersForResponse);
+        }
+
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CustomerDto customerDto)
         {

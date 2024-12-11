@@ -247,6 +247,66 @@ namespace CustomerManagement.Services
             return ServiceResult<IEnumerable<Customer>>.SuccessResult(listCustomers, 201);
         }
 
+        public ServiceResult<IEnumerable<Customer>> AddRange2(IEnumerable<CustomerDto> customers)
+        {
+            List<Customer> listCustomersFinalResult = new List<Customer>();
+            List<CustomerDto> listCustomersTemporaryResult = new List<CustomerDto>();
+
+            var customersNotDuplicate = customers.GroupBy(c => c.Email).Where(group => group.Count() == 1).SelectMany(group => group).ToList();
+        
+            foreach (var customer in customersNotDuplicate)
+            {
+                var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth); // passou apenas os com a data certa.
+                var findCustomerByEmail = GetByEmail(customer.Email); // exceção aqui - verificar
+
+                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInList(customer.Addresses);// passou apenas os com os endereços certos - não duplicados.
+
+                if (dateIsValid || findCustomerByEmail != null
+                    || customer.Addresses.Count == 0 || checkIfTheCustomerHasARepeatingAddress
+                   )
+                {
+                    continue;
+                }
+
+                listCustomersTemporaryResult.Add(customer);
+            }
+
+            foreach (var customer in listCustomersTemporaryResult)
+            {
+                var newCustomer = new Customer
+                {
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName, 
+                    Email = customer.Email, 
+                    DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
+                    Addresses = new List<Address>()
+                };
+
+                foreach (var address in customer.Addresses)
+                {
+                    var newAddress = new Address
+                    {
+                        ZipCode = address.ZipCode,
+                        Street = address.Street,
+                        Number = address.Number,
+                        Neighborhood = address.Neighborhood,
+                        AddressComplement = address.AddressComplement,
+                        City = address.City,
+                        State = address.State,
+                        Country = address.Country
+                    };
+
+                    newCustomer.Addresses.Add(newAddress);
+                }
+
+                listCustomersFinalResult.Add(newCustomer);      
+            }
+
+            _repository.AddRange(listCustomersFinalResult);
+
+            return ServiceResult<IEnumerable<Customer>>.SuccessResult(listCustomersFinalResult, 201);
+        }
+
         public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers)
         {
             List<Customer> listCustomersForResponse = new List<Customer>();
