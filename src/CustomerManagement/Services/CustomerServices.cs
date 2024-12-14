@@ -252,7 +252,7 @@ namespace CustomerManagement.Services
             // BatchResponse
             var batchImportResponse = new BatchImportResponse();
             batchImportResponse.FailureErrorsMessages = new List<string>();
-            batchImportResponse.Success = new List<Customer>();
+            batchImportResponse.Success = new List<CustomerDtoResponse>();
             batchImportResponse.Failure = new List<CustomerDto>();
 
             //Success
@@ -261,7 +261,6 @@ namespace CustomerManagement.Services
 
             //Failure
             List<CustomerDto> listCustomersFinalResultFailure = new List<CustomerDto>();
-            // List<CustomerDto> listCustomersTemporaryResultFailure = new List<CustomerDto>();
 
             var duplicateEmails = GetDuplicateEmails(customers: customers);
             if (duplicateEmails.Any()) batchImportResponse.FailureErrorsMessages.Add($"{ResponseMessagesCustomers.DuplicateEmailFoundError}: {string.Join(", ", duplicateEmails)}.");
@@ -328,7 +327,16 @@ namespace CustomerManagement.Services
 
             _repository.AddRange(listCustomersFinalResultSuccess);
 
-            batchImportResponse.Success.AddRange(listCustomersFinalResultSuccess);
+            // Lista para gerar a Response dos customers
+            var listCustomersForCustomerDtoResponse = new List<CustomerDtoResponse>();
+
+            foreach (var customer in listCustomersFinalResultSuccess)
+            {
+                var customerDto = GenerateCustomerDtoResponse(customer);
+                listCustomersForCustomerDtoResponse.Add(customerDto);
+            }
+
+            batchImportResponse.Success.AddRange(listCustomersForCustomerDtoResponse);
             batchImportResponse.Failure.AddRange(listCustomersFinalResultFailure);
             batchImportResponse.SuccessCount = listCustomersFinalResultSuccess.Count();
             batchImportResponse.FailureCount = listCustomersFinalResultFailure.Count();
