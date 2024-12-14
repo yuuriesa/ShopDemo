@@ -154,16 +154,16 @@ namespace CustomerManagement.Controllers
                 return StatusCode(500, new { message = err.Message });
             }
 
-            var listCustomers = new List<CustomerDtoResponse>();
+            var listCustomersSuccess = new List<CustomerDtoResponse>();
 
             foreach (var customer in batchImportResponse.Success)
             {
                 var getByEmail = _repository.GetByEmail(customer.Email);
                 var customerDto = _services.GenerateCustomerDtoResponse(getByEmail);
-                listCustomers.Add(customerDto);
+                listCustomersSuccess.Add(customerDto);
             }
 
-            batchImportResponse.Success = listCustomers;
+            batchImportResponse.Success = listCustomersSuccess;
 
             return Ok(batchImportResponse);
         }
