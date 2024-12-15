@@ -341,8 +341,8 @@ namespace CustomerManagement.Services
             }
 
             batchImportResponse.Failure.AddRange(listCustomersFinalResultFailure);
-            batchImportResponse.SuccessCount = listCustomersFinalResultSuccess.Count();
-            batchImportResponse.FailureCount = listCustomersFinalResultFailure.Count();
+            batchImportResponse.SuccessCount = listCustomersFinalResultSuccess.Count;
+            batchImportResponse.FailureCount = listCustomersFinalResultFailure.Count;
 
             return ServiceResult<BatchImportResponse>.SuccessResult(batchImportResponse, 201);
         }
