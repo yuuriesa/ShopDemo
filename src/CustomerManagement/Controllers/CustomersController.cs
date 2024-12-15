@@ -137,14 +137,14 @@ namespace CustomerManagement.Controllers
         {
             var batchImportResponse = new BatchImportResponse();
             var transaction = await _dbContext.Database.BeginTransactionAsync();
-            
+
             try
             {
                 if (customers.Count() == 0) return NoContent();
 
                 var result = _services.AddRange2(customers);
                 batchImportResponse = result.Data;
-                
+
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
@@ -154,18 +154,24 @@ namespace CustomerManagement.Controllers
                 return StatusCode(500, new { message = err.Message });
             }
 
-            var listCustomersSuccess = new List<CustomerDtoResponse>();
-
-            foreach (var customer in batchImportResponse.Success)
-            {
-                var getByEmail = _repository.GetByEmail(customer.Email);
-                var customerDto = _services.GenerateCustomerDtoResponse(getByEmail);
-                listCustomersSuccess.Add(customerDto);
-            }
-
-            batchImportResponse.Success = listCustomersSuccess;
+            TryConfigureSuccessResponse(batchImportResponse);
 
             return Ok(batchImportResponse);
+        }
+
+        private void TryConfigureSuccessResponse(BatchImportResponse batchImportResponse)
+        {
+            if (batchImportResponse.Success is not null)
+            {
+                var listCustomersSuccess = new List<CustomerDtoResponse>();
+                foreach (var customer in batchImportResponse.Success)
+                {
+                    var getByEmail = _repository.GetByEmail(customer.Email);
+                    var customerDto = _services.GenerateCustomerDtoResponse(getByEmail);
+                    listCustomersSuccess.Add(customerDto);
+                }
+                batchImportResponse.Success = listCustomersSuccess;
+            }
         }
 
         [HttpPut("{id}")]

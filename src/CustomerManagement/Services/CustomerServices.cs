@@ -252,7 +252,6 @@ namespace CustomerManagement.Services
             // BatchResponse
             var batchImportResponse = new BatchImportResponse();
             batchImportResponse.FailureErrorsMessages = new List<string>();
-            batchImportResponse.Success = new List<CustomerDtoResponse>();
             batchImportResponse.Failure = new List<CustomerDto>();
 
             //Success
@@ -336,7 +335,11 @@ namespace CustomerManagement.Services
                 listCustomersForCustomerDtoResponse.Add(customerDto);
             }
 
-            batchImportResponse.Success.AddRange(listCustomersForCustomerDtoResponse);
+            if (listCustomersForCustomerDtoResponse.Count > 0)
+            {
+                batchImportResponse.Success = listCustomersForCustomerDtoResponse;
+            }
+
             batchImportResponse.Failure.AddRange(listCustomersFinalResultFailure);
             batchImportResponse.SuccessCount = listCustomersFinalResultSuccess.Count();
             batchImportResponse.FailureCount = listCustomersFinalResultFailure.Count();

@@ -6,7 +6,8 @@ namespace CustomerManagement.Models
     {
         public int SuccessCount { get; set; }
         public int FailureCount { get; set; }
-        public List<CustomerDtoResponse>? Success { get; set; }
+        public List<CustomerDtoResponse>? Success {get;set;}
+
         public List<CustomerDto>? Failure { get; set; }
         public List<string> FailureErrorsMessages { get; set; }
     }
