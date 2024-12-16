@@ -258,51 +258,7 @@ namespace CustomerManagement.Services
             List<Customer> listCustomersFinalResultSuccess = new List<Customer>();
             List<CustomerDto> listCustomersTemporaryResultSuccess = new List<CustomerDto>();
             ProcessDuplicateEmailEntriesForBatch2(customers, batchImportResponse);
-
-            //Criar uma lista de customers apenas com os customers que não tem email duplicado e os agrupar. 
-            var customersWithNonDuplicateEmail = customers.GroupBy(c => c.Email).Where(group => group.Count() == 1).SelectMany(group => group).ToList();
-
-            foreach (var customer in customersWithNonDuplicateEmail)
-            {
-                var customerDtoWithMessageError = new CustomerDtoWithMessageError();
-                customerDtoWithMessageError.FailureErrorMessages = new List<string>();
-
-                var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
-                var findCustomerByEmail = GetByEmail(customer.Email);
-                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInList(customer.Addresses);
-
-                if (!dateIsValid && findCustomerByEmail == null
-                    && customer.Addresses.Count() > 0 && !checkIfTheCustomerHasARepeatingAddress
-                   )
-                {
-                    listCustomersTemporaryResultSuccess.Add(customer);
-                }
-
-                if (dateIsValid)
-                {
-                    customerDtoWithMessageError.Customer = customer;
-                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.DateOfBirthError);
-                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
-                }
-                if (findCustomerByEmail != null)
-                {
-                    customerDtoWithMessageError.Customer = customer;
-                    customerDtoWithMessageError.FailureErrorMessages.Add($"{ResponseMessagesCustomers.ThisEmailExistsError}: '{customer.Email}'");
-                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
-                }
-                if (customer.Addresses.Count == 0)
-                {
-                    customerDtoWithMessageError.Customer = customer;
-                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.MinimumRegisteredAddressError);
-                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
-                }
-                if (checkIfTheCustomerHasARepeatingAddress)
-                {
-                    customerDtoWithMessageError.Customer = customer;
-                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.DuplicateAddressExistsError);
-                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
-                }
-            }
+            FilterAndValidateCustomersBatch2(customers, batchImportResponse, listCustomersTemporaryResultSuccess);
 
             foreach (var customer in listCustomersTemporaryResultSuccess)
             {
@@ -354,7 +310,64 @@ namespace CustomerManagement.Services
             batchImportResponse.SuccessCustomersCount = batchImportResponse.Success!.Count;
             batchImportResponse.FailureCustomersCount = batchImportResponse.Failure.Count;
 
+            if (batchImportResponse.Failure.Count == 0)
+            {
+                batchImportResponse.Failure = null;
+            }
+            if (batchImportResponse.Success.Count == 0)
+            {
+                batchImportResponse.Success = null;
+            }
+
             return ServiceResult<BatchImportResponse>.SuccessResult(batchImportResponse, 201);
+        }
+
+        private void FilterAndValidateCustomersBatch2(IEnumerable<CustomerDto> customers, BatchImportResponse batchImportResponse, List<CustomerDto> listCustomersTemporaryResultSuccess)
+        {
+            //Criar uma lista de customers apenas com os customers que não tem email duplicado e os agrupar. 
+            var customersWithNonDuplicateEmail = customers.GroupBy(c => c.Email).Where(group => group.Count() == 1).SelectMany(group => group).ToList();
+
+            foreach (var customer in customersWithNonDuplicateEmail)
+            {
+                var customerDtoWithMessageError = new CustomerDtoWithMessageError();
+                customerDtoWithMessageError.FailureErrorMessages = new List<string>();
+
+                var dateIsValid = VerifyDateOfBirth(customer.DateOfBirth);
+                var findCustomerByEmail = GetByEmail(customer.Email);
+                var checkIfTheCustomerHasARepeatingAddress = CheckIfTheCustomerHasARepeatingAddressInList(customer.Addresses);
+
+                if (!dateIsValid && findCustomerByEmail == null
+                    && customer.Addresses.Count() > 0 && !checkIfTheCustomerHasARepeatingAddress
+                   )
+                {
+                    listCustomersTemporaryResultSuccess.Add(customer);
+                }
+
+                if (dateIsValid)
+                {
+                    customerDtoWithMessageError.Customer = customer;
+                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.DateOfBirthError);
+                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
+                }
+                if (findCustomerByEmail != null)
+                {
+                    customerDtoWithMessageError.Customer = customer;
+                    customerDtoWithMessageError.FailureErrorMessages.Add($"{ResponseMessagesCustomers.ThisEmailExistsError}: '{customer.Email}'");
+                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
+                }
+                if (customer.Addresses.Count == 0)
+                {
+                    customerDtoWithMessageError.Customer = customer;
+                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.MinimumRegisteredAddressError);
+                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
+                }
+                if (checkIfTheCustomerHasARepeatingAddress)
+                {
+                    customerDtoWithMessageError.Customer = customer;
+                    customerDtoWithMessageError.FailureErrorMessages.Add(ResponseMessagesCustomers.DuplicateAddressExistsError);
+                    batchImportResponse.Failure.Add(customerDtoWithMessageError);
+                }
+            }
         }
 
         private void ProcessDuplicateEmailEntriesForBatch2(IEnumerable<CustomerDto> customers, BatchImportResponse batchImportResponse)
