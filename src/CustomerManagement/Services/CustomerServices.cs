@@ -257,27 +257,7 @@ namespace CustomerManagement.Services
             //Success
             List<Customer> listCustomersFinalResultSuccess = new List<Customer>();
             List<CustomerDto> listCustomersTemporaryResultSuccess = new List<CustomerDto>();
-
-            //Failure
-            //<CustomerDtoWithMessageError> listCustomersFinalResultFailure = new List<CustomerDtoWithMessageError>();
-
-            var duplicateEmails = GetDuplicateEmails(customers: customers);
-
-            foreach (var email in duplicateEmails)
-            {
-                var customersDuplicate = customers.Where(c => c.Email == email);
-
-                foreach (var customer in customersDuplicate)
-                {    
-                    var failureErrorMessages = new List<string> { $"{ResponseMessagesCustomers.DuplicateEmailFoundError}: '{email}'" };
-                    batchImportResponse.Failure.Add(new CustomerDtoWithMessageError
-                    {
-                        Customer = customer!,
-                        FailureErrorMessages = failureErrorMessages
-                    });
-                }
-
-            }
+            ProcessDuplicateEmailEntriesForBatch2(customers, batchImportResponse);
 
             //Criar uma lista de customers apenas com os customers que não tem email duplicado e os agrupar. 
             var customersWithNonDuplicateEmail = customers.GroupBy(c => c.Email).Where(group => group.Count() == 1).SelectMany(group => group).ToList();
@@ -329,8 +309,8 @@ namespace CustomerManagement.Services
                 var newCustomer = new Customer
                 {
                     FirstName = customer.FirstName,
-                    LastName = customer.LastName, 
-                    Email = customer.Email, 
+                    LastName = customer.LastName,
+                    Email = customer.Email,
                     DateOfBirth = DateOnly.FromDateTime(customer.DateOfBirth),
                     Addresses = new List<Address>()
                 };
@@ -352,7 +332,7 @@ namespace CustomerManagement.Services
                     newCustomer.Addresses.Add(newAddress);
                 }
 
-                listCustomersFinalResultSuccess.Add(newCustomer);      
+                listCustomersFinalResultSuccess.Add(newCustomer);
             }
 
             _repository.AddRange(listCustomersFinalResultSuccess);
@@ -375,6 +355,27 @@ namespace CustomerManagement.Services
             batchImportResponse.FailureCustomersCount = batchImportResponse.Failure.Count;
 
             return ServiceResult<BatchImportResponse>.SuccessResult(batchImportResponse, 201);
+        }
+
+        private void ProcessDuplicateEmailEntriesForBatch2(IEnumerable<CustomerDto> customers, BatchImportResponse batchImportResponse)
+        {
+            var duplicateEmails = GetDuplicateEmails(customers: customers);
+
+            foreach (var email in duplicateEmails)
+            {
+                var customersDuplicate = customers.Where(c => c.Email == email);
+
+                foreach (var customer in customersDuplicate)
+                {
+                    var failureErrorMessages = new List<string> { $"{ResponseMessagesCustomers.DuplicateEmailFoundError}: '{email}'" };
+                    batchImportResponse.Failure.Add(new CustomerDtoWithMessageError
+                    {
+                        Customer = customer!,
+                        FailureErrorMessages = failureErrorMessages
+                    });
+                }
+
+            }
         }
 
         public IEnumerable<Customer> GetListCustomersByEmail(IEnumerable<CustomerDto> customers)
