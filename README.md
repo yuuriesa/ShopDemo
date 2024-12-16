@@ -109,5 +109,5 @@ Este projeto está licenciado sob a [MIT License](LICENSE).
 ## Autor
 
 - Desenvolvido por [Yuri Torres] - Github: https://github.com/yurisalgado21/
-- com base nas mentorias de [Marcelo Castelo] - Github: https://github.com/MarceloCas/
+- Com base nas mentorias que tive com meu mentor, que me auxiliou e orientou em todas as etapas do desenvolvimento, o [Marcelo Castelo] - Github: https://github.com/MarceloCas/
 
