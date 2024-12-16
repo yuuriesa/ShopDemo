@@ -251,6 +251,7 @@ namespace CustomerManagement.Services
         {
             // BatchResponse
             var batchImportResponse = new BatchImportResponse();
+            batchImportResponse.Success = new List<CustomerDtoResponse>();
             batchImportResponse.Failure = new List<CustomerDtoWithMessageError>();
 
             //Success
@@ -258,19 +259,24 @@ namespace CustomerManagement.Services
             List<CustomerDto> listCustomersTemporaryResultSuccess = new List<CustomerDto>();
 
             //Failure
-            List<CustomerDtoWithMessageError> listCustomersFinalResultFailure = new List<CustomerDtoWithMessageError>();
+            //<CustomerDtoWithMessageError> listCustomersFinalResultFailure = new List<CustomerDtoWithMessageError>();
 
             var duplicateEmails = GetDuplicateEmails(customers: customers);
 
             foreach (var email in duplicateEmails)
             {
-                var customer = customers.FirstOrDefault(c => c.Email == email);
-                var failureErrorMessages = new List<string> { $"{ResponseMessagesCustomers.DuplicateEmailFoundError}: '{email}'" };
-                listCustomersFinalResultFailure.Add(new CustomerDtoWithMessageError
-                {
-                    Customer = customer,
-                    FailureErrorMessages = failureErrorMessages
-                });
+                var customersDuplicate = customers.Where(c => c.Email == email);
+
+                foreach (var customer in customersDuplicate)
+                {    
+                    var failureErrorMessages = new List<string> { $"{ResponseMessagesCustomers.DuplicateEmailFoundError}: '{email}'" };
+                    batchImportResponse.Failure.Add(new CustomerDtoWithMessageError
+                    {
+                        Customer = customer!,
+                        FailureErrorMessages = failureErrorMessages
+                    });
+                }
+
             }
 
             //Criar uma lista de customers apenas com os customers que não tem email duplicado e os agrupar. 
@@ -365,7 +371,7 @@ namespace CustomerManagement.Services
                 batchImportResponse.Success = listCustomersForCustomerDtoResponse;
             }
 
-            batchImportResponse.SuccessCustomersCount = batchImportResponse.Success.Count;
+            batchImportResponse.SuccessCustomersCount = batchImportResponse.Success!.Count;
             batchImportResponse.FailureCustomersCount = batchImportResponse.Failure.Count;
 
             return ServiceResult<BatchImportResponse>.SuccessResult(batchImportResponse, 201);

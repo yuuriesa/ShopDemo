@@ -137,7 +137,6 @@ namespace CustomerManagement.Controllers
         {
             var batchImportResponse = new BatchImportResponse();
             var transaction = await _dbContext.Database.BeginTransactionAsync();
-
             try
             {
                 if (customers.Count() == 0) return NoContent();
