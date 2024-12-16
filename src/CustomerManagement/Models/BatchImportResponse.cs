@@ -4,11 +4,10 @@ namespace CustomerManagement.Models
 {
     public class BatchImportResponse
     {
-        public int SuccessCount { get; set; }
-        public int FailureCount { get; set; }
+        public int SuccessCustomersCount { get; set; }
+        public int FailureCustomersCount { get; set; }
         public List<CustomerDtoResponse>? Success {get;set;}
 
-        public List<CustomerDto>? Failure { get; set; }
-        public List<string> FailureErrorsMessages { get; set; }
+        public List<CustomerDtoWithMessageError>? Failure { get; set; }
     }
 }
