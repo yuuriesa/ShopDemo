@@ -2,7 +2,7 @@ namespace CustomerManagement.Models
 {
     public class Product
     {
-        public int Id { get; }
+        public int Id { get; private set; }
         private string _code { get; set; }
         private string _name { get; set; }
         public string Code => _code;
@@ -13,8 +13,9 @@ namespace CustomerManagement.Models
         //constructors
         //private contructor
         private Product(){}
-        private Product(string code, string name)
+        private Product(int id, string code, string name)
         {
+            Id = id;
             _code = code;
             _name = name;
             Validate();
@@ -31,9 +32,9 @@ namespace CustomerManagement.Models
             return product;
         }
 
-        public static Product SetExistingInfo(string code, string name)
+        public static Product SetExistingInfo(int id, string code, string name)
         {
-            var product = new Product(code, name);
+            var product = new Product(id: id, code: code, name: name);
             product.Validate();
 
             return product;

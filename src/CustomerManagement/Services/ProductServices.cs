@@ -65,12 +65,12 @@ namespace CustomerManagement.Services
                 return null!;
             }
 
-            //var product = Product.SetExistingInfo(id: findProductById.Id, code: findProductById.Code, name: findProductById.Name);
+            var product = Product.SetExistingInfo(id: findProductById.Id, code: findProductById.Code, name: findProductById.Name);
             var productDtoResponse = new ProductDtoResponse
             {
-                Id = findProductById.Id,
-                Code = findProductById.Code,
-                Name = findProductById.Name
+                Id = product.Id,
+                Code = product.Code,
+                Name = product.Name
             };
             return productDtoResponse;
         }

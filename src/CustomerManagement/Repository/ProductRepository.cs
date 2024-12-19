@@ -23,12 +23,12 @@ namespace CustomerManagement.Repository
                 return null!;
             }
 
-            //var product = Product.SetExistingInfo(id: findProductByCode.Id, code: findProductByCode.Code, name: findProductByCode.Name);
+            var product = Product.SetExistingInfo(id: findProductByCode.Id, code: findProductByCode.Code, name: findProductByCode.Name);
             var productDtoResponse = new ProductDtoResponse
             {
-                Id = findProductByCode.Id,
-                Code = findProductByCode.Code,
-                Name = findProductByCode.Name
+                Id = product.Id,
+                Code = product.Code,
+                Name = product.Name
             };
             return productDtoResponse;
         }
