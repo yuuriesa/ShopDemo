@@ -7,6 +7,7 @@ namespace CustomerManagement.Data
     {
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Product> Products { get; set; }
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
 
@@ -100,6 +101,27 @@ namespace CustomerManagement.Data
                 .HasForeignKey(a => a.CustomerId);
                 //.OnDelete(DeleteBehavior.Restrict);
             });
+
+            modelBuilder.Entity<Product>(entity =>
+                {
+                    entity.HasKey(p => p.Id);
+
+                    entity.Property<string>("_code")
+                    .HasMaxLength(40)
+                    .HasColumnName("Code")
+                    .IsRequired();
+
+                    entity.HasIndex("_code")
+                    .IsUnique();
+
+                    entity.Property<string>("_name")
+                    .HasMaxLength(40)
+                    .HasColumnName("Name")
+                    .IsRequired();
+
+                    entity.Ignore(p => p.IsValid);
+                }
+            );
             
             base.OnModelCreating(modelBuilder);
         }

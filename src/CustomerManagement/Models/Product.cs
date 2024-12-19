@@ -2,6 +2,7 @@ namespace CustomerManagement.Models
 {
     public class Product
     {
+        public int Id { get; }
         private string _code { get; set; }
         private string _name { get; set; }
         public string Code => _code;
