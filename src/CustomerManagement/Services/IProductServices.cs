@@ -8,6 +8,7 @@ namespace CustomerManagement.Services
     {
         public IEnumerable<Product> GetAll(PaginationFilter paginationFilter);
         public ProductDtoResponse GetByCode(string code);
+        public ProductDtoResponse GetById(int id);
         public ServiceResult<Product> Add(ProductDtoRequest product);
     }
 }

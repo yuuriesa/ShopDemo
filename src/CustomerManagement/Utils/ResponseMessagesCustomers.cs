@@ -6,6 +6,7 @@ namespace CustomerManagement.Utils
     {
         public const string CustomerNotFoundMessage = "Customer not found";
         public const string AddressNotFoundMessage = "Address not found";
+        public const string ProductNotFoundMessage = "Product not found";
         public const string CustomerPaginationError = "The pagination parameters 'pageSize' and 'pageNumber' must be positive numbers. Check the values ​​provided.";
         public const string DateOfBirthError = "You cannot put the date with the day after today.";
         public const string EmailExistsError = "This email exists";

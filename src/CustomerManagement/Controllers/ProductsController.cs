@@ -1,6 +1,7 @@
 using CustomerManagement.Data;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
+using CustomerManagement.Repository;
 using CustomerManagement.Services;
 using CustomerManagement.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace CustomerManagement.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IProductRepository _productRepository;
         private readonly IProductServices _productServices;
 
         public ProductsController(IProductServices productServices, ApplicationDbContext dbContext)
@@ -32,6 +34,19 @@ namespace CustomerManagement.Controllers
             return Ok(allProducts);
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var product = _productServices.GetById(id);
+
+            if (product == null)
+            {
+                return NotFound(ResponseMessagesCustomers.ProductNotFoundMessage);
+            }
+
+            return Ok(product);
+        }
+
         [HttpPost]
         public IActionResult Add(ProductDtoRequest productDtoRequest)
         {
@@ -46,7 +61,7 @@ namespace CustomerManagement.Controllers
 
             var getProductByCodeForResponse = _productServices.GetByCode(result.Data.Code);
 
-            return Created("", getProductByCodeForResponse);
+            return CreatedAtAction(actionName: nameof(GetById) , routeValues: new { id = result.Data.Id }, getProductByCodeForResponse);
         }
     }
 }

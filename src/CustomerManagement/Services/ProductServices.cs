@@ -38,5 +38,22 @@ namespace CustomerManagement.Services
             var findProductByCode = _productRepository.GetByCode(code);
             return findProductByCode;
         }
+
+        public ProductDtoResponse GetById(int id)
+        {
+            var findProductById = _productRepository.GetById(id);
+            if (findProductById == null)
+            {
+                return null!;
+            }
+
+            var product = Product.SetExistingInfo(code: findProductById.Code, name: findProductById.Name);
+            var productDtoResponse = new ProductDtoResponse
+            {
+                Code = product.Code,
+                Name = product.Name
+            };
+            return productDtoResponse;
+        }
     }
 }
