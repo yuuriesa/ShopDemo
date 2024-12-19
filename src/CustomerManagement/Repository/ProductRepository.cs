@@ -16,18 +16,19 @@ namespace CustomerManagement.Repository
         public ProductDtoResponse? GetByCode(string code)
         {
             var findProductByCode = _dbContext.Products
-           .Where(p => EF.Property<string>(p, "_code") == code).FirstOrDefault();
+           .FirstOrDefault(p => EF.Property<string>(p, "_code") == code);
 
             if (findProductByCode == null)
             {
                 return null!;
             }
 
-            var product = Product.SetExistingInfo(code: findProductByCode.Code, name: findProductByCode.Name);
+            //var product = Product.SetExistingInfo(id: findProductByCode.Id, code: findProductByCode.Code, name: findProductByCode.Name);
             var productDtoResponse = new ProductDtoResponse
             {
-                Code = product.Code,
-                Name = product.Name
+                Id = findProductByCode.Id,
+                Code = findProductByCode.Code,
+                Name = findProductByCode.Name
             };
             return productDtoResponse;
         }

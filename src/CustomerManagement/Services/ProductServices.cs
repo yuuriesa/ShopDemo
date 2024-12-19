@@ -16,6 +16,13 @@ namespace CustomerManagement.Services
 
         public ServiceResult<Product> Add(ProductDtoRequest product)
         {
+            var productWithCodeExists = GetByCode(product.Code);
+
+            if (productWithCodeExists != null)
+            {
+                return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.ProductWithThisCodeExists, 422);
+            }
+
             var newProduct = Product.RegisterNew(code: product.Code, name: product.Name);
 
             if (!newProduct.IsValid)
@@ -28,14 +35,25 @@ namespace CustomerManagement.Services
             return ServiceResult<Product>.SuccessResult(newProduct, 201);
         }
 
-        public IEnumerable<Product> GetAll(PaginationFilter paginationFilter)
+        public IEnumerable<ProductDtoResponse> GetAll(PaginationFilter paginationFilter)
         {
-            return _productRepository.GetAll(paginationFilter);
+            var allProducts = _productRepository.GetAll(paginationFilter);
+            return from product in allProducts
+                   select new ProductDtoResponse
+                   {
+                        Id = product.Id,
+                        Code = product.Code,
+                        Name = product.Name
+                   };
         }
 
         public ProductDtoResponse GetByCode(string code)
         {
             var findProductByCode = _productRepository.GetByCode(code);
+            if (findProductByCode == null)
+            {
+                return null!;
+            }
             return findProductByCode;
         }
 
@@ -47,11 +65,12 @@ namespace CustomerManagement.Services
                 return null!;
             }
 
-            var product = Product.SetExistingInfo(code: findProductById.Code, name: findProductById.Name);
+            //var product = Product.SetExistingInfo(id: findProductById.Id, code: findProductById.Code, name: findProductById.Name);
             var productDtoResponse = new ProductDtoResponse
             {
-                Code = product.Code,
-                Name = product.Name
+                Id = findProductById.Id,
+                Code = findProductById.Code,
+                Name = findProductById.Name
             };
             return productDtoResponse;
         }

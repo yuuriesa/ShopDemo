@@ -10,6 +10,7 @@ namespace CustomerManagement.Utils
         public const string CustomerPaginationError = "The pagination parameters 'pageSize' and 'pageNumber' must be positive numbers. Check the values ​​provided.";
         public const string DateOfBirthError = "You cannot put the date with the day after today.";
         public const string EmailExistsError = "This email exists";
+        public const string ProductWithThisCodeExists = "There is a product with this code";
         public const string AddressExistsError = "This address already exists";
         public const string DuplicateAddressExistsError = "Duplicate address found in input";
         public const string AddressAlreadyBelongsToCustomerError = "This address already belongs to the customer";

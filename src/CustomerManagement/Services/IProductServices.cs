@@ -6,7 +6,7 @@ namespace CustomerManagement.Services
 {
     public interface IProductServices
     {
-        public IEnumerable<Product> GetAll(PaginationFilter paginationFilter);
+        public IEnumerable<ProductDtoResponse> GetAll(PaginationFilter paginationFilter);
         public ProductDtoResponse GetByCode(string code);
         public ProductDtoResponse GetById(int id);
         public ServiceResult<Product> Add(ProductDtoRequest product);
