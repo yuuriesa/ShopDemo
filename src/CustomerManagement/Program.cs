@@ -14,6 +14,9 @@ builder.Services.AddScoped<IRepositoryBase<Customer>, RepositoryBase<Customer>>(
 builder.Services.AddScoped<IAddressServices, AddressServices>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IRepositoryBase<Address>, RepositoryBase<Address>>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductServices, ProductServices>();
+builder.Services.AddScoped<IRepositoryBase<Product>, RepositoryBase<Product>>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
