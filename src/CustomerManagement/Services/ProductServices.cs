@@ -35,6 +35,54 @@ namespace CustomerManagement.Services
             return ServiceResult<Product>.SuccessResult(newProduct, 201);
         }
 
+        public ServiceResult<IEnumerable<Product>> AddBatchProducts(IEnumerable<ProductDtoRequest> products)
+        {
+            List<Product> listProducts = new List<Product>();
+
+            var duplicateCodesInProduct = products
+                .GroupBy(p => p.Code)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key);
+
+            if (duplicateCodesInProduct.Any())
+            {
+                return ServiceResult<IEnumerable<Product>>
+                    .ErrorResult
+                    (
+                        $"{ResponseMessagesCustomers.DuplicateCodesInInputBatchProduct}: {string.Join(", ", duplicateCodesInProduct)}", 400
+                    );
+            }
+
+            foreach (var product in products)
+            {
+                var productWithCodeExists = GetByCode(product.Code);
+
+                if (productWithCodeExists != null)
+                {
+                    return ServiceResult<IEnumerable<Product>>.ErrorResult
+                    (
+                        ResponseMessagesCustomers.ProductWithThisCodeExists + $": {product.Code}", 422
+                    );
+                }
+
+                var newProduct = Product.RegisterNew(code: product.Code, name: product.Name);
+
+                if (!newProduct.IsValid)
+                {
+                    return ServiceResult<IEnumerable<Product>>.ErrorResult
+                    (
+                        ResponseMessagesCustomers.FieldsAreInvalidProduct, 400
+                    );
+                }
+
+                listProducts.Add(newProduct);
+            }
+
+            _productRepository.AddRange(listProducts);
+
+            return ServiceResult<IEnumerable<Product>>.SuccessResult(listProducts, 201);
+        }
+
         public IEnumerable<ProductDtoResponse> GetAll(PaginationFilter paginationFilter)
         {
             var allProducts = _productRepository.GetAll(paginationFilter);

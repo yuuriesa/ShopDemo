@@ -63,5 +63,44 @@ namespace CustomerManagement.Controllers
 
             return CreatedAtAction(actionName: nameof(GetById) , routeValues: new { id = result.Data.Id }, getProductByCodeForResponse);
         }
+
+        [HttpPost("batch")]
+        public async Task<IActionResult> AddBatchProducts([FromBody] IEnumerable<ProductDtoRequest> products)
+        {
+            if (products.Count() == 0)
+            {
+                return NoContent();
+            }
+
+            var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var result = _productServices.AddBatchProducts(products);
+
+                if (!result.Success)
+                {
+                    return StatusCode(result.StatusCode, result.Message);
+                }
+
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                List<ProductDtoResponse> listProductsDtoResponse = new List<ProductDtoResponse>();
+
+                foreach (var product in result.Data)
+                {
+                    var newProductDtoResponse = _productServices.GetByCode(product.Code);
+                    listProductsDtoResponse.Add(newProductDtoResponse);
+                }
+
+                return Created("", listProductsDtoResponse);
+            }
+            catch (Exception err)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, err.Message);
+            }
+        }
     }
 }

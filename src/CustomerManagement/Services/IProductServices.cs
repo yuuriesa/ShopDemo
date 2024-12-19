@@ -10,5 +10,6 @@ namespace CustomerManagement.Services
         public ProductDtoResponse GetByCode(string code);
         public ProductDtoResponse GetById(int id);
         public ServiceResult<Product> Add(ProductDtoRequest product);
+        public ServiceResult<IEnumerable<Product>> AddBatchProducts(IEnumerable<ProductDtoRequest> products);
     }
 }

@@ -35,5 +35,6 @@ namespace CustomerManagement.Utils
         public const string CountryIsRequired = "Country is Required";
         public const string MaximumCharacters = "Must have a maximum of 40 characters";
         public const string EmailFieldIsNotAValid = "The Email field is not a valid e-mail address.";
+        public const string DuplicateCodesInInputBatchProduct = "Duplicate Code(s) found in input";
     }
 }
