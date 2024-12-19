@@ -1,20 +1,21 @@
 using System.ComponentModel.DataAnnotations;
+using CustomerManagement.Utils;
 
 namespace CustomerManagement.DTO
 {
     public class CustomerDto
     {
-        [Required(ErrorMessage = "FirstName is Required", AllowEmptyStrings = false)]
-        [MaxLength(40, ErrorMessage = "Must have a maximum of 40 characters")]
+        [Required(ErrorMessage = ResponseMessagesCustomers.FirstNameIsRequired, AllowEmptyStrings = false)]
+        [MaxLength(40, ErrorMessage = ResponseMessagesCustomers.MaximumCharacters)]
         public string FirstName { get; set; }
-        [MaxLength(40, ErrorMessage = "Must have a maximum of 40 characters")]
+        [MaxLength(40, ErrorMessage = ResponseMessagesCustomers.MaximumCharacters)]
         public string? LastName { get; set; }
-        [EmailAddress(ErrorMessage = "The Email field is not a valid e-mail address.")]
-        [Required(ErrorMessage = "Email is Required")]
+        [EmailAddress(ErrorMessage = ResponseMessagesCustomers.EmailFieldIsNotAValid)]
+        [Required(ErrorMessage = ResponseMessagesCustomers.EmailIsRequired)]
         public string Email { get; set; }
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
-        [Required(ErrorMessage = "At least one address is Required")]
+        [Required(ErrorMessage = ResponseMessagesCustomers.AddressIsRequired)]
         public ICollection<AddressDto> Addresses { get; set; }
     }
 }

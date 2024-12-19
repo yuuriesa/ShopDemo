@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CustomerManagement.Utils
 {
     public static class ResponseMessagesCustomers
@@ -18,6 +20,18 @@ namespace CustomerManagement.Utils
         public const string FieldsAreInvalidProduct = "Code or name fields are invalid, check the values ​​available.";
         public const string CodeIsRequired = "Code is Required";
         public const string NameIsRequired = "Name is Required";
+        public const string FirstNameIsRequired = "FirstName is Required";
+        public const string EmailIsRequired = "Email is Required";
+        public const string AddressIsRequired = "At least one address is Required";
+        public const string ZipCodeIsRequired = "ZipCode is Required";
+        public const string StreetIsRequired = "Street is Required";
+        public const string NumberIsRequired = "Number is Required";
+        public const string NeighborhoodIsRequired = "Neighborhood is Required";
+        public const string AddressComplementIsRequired = "AddressComplement is Required";
+        public const string CityIsRequired = "City is Required";
+        public const string StateIsRequired = "State is Required";
+        public const string CountryIsRequired = "Country is Required";
         public const string MaximumCharacters = "Must have a maximum of 40 characters";
+        public const string EmailFieldIsNotAValid = "The Email field is not a valid e-mail address.";
     }
 }
