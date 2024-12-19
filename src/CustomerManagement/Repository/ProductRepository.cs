@@ -1,6 +1,7 @@
 using CustomerManagement.Data;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerManagement.Repository
 {
@@ -15,8 +16,7 @@ namespace CustomerManagement.Repository
         public ProductDtoResponse? GetByCode(string code)
         {
             var findProductByCode = _dbContext.Products
-            .AsEnumerable() // Força execução no cliente
-            .FirstOrDefault(p => p.Code == code);
+           .Where(p => EF.Property<string>(p, "_code") == code).FirstOrDefault();
 
             if (findProductByCode == null)
             {
