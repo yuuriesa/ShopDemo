@@ -16,5 +16,8 @@ namespace CustomerManagement.Utils
         public const string ThisEmailExistsError = $"This email exists";
         public const string ItsNotPossibleToDeleteTheLastAddress = "It is not possible to delete the last address. The customer must have at least one registered address";
         public const string FieldsAreInvalidProduct = "Code or name fields are invalid, check the values ​​available.";
+        public const string CodeIsRequired = "Code is Required";
+        public const string NameIsRequired = "Name is Required";
+        public const string MaximumCharacters = "Must have a maximum of 40 characters";
     }
 }

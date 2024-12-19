@@ -60,7 +60,7 @@ namespace CustomerManagement.Models
         }
         private void Validate()
         {
-            IsValid = _code.Length <= 40 && _name.Length <= 40;
+            IsValid = _code.Length <= 40 && _code.Length > 0 && _name.Length <= 40 && _name.Length > 0;
         }
     }
 }
