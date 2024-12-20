@@ -65,9 +65,9 @@ namespace CustomerManagement.Controllers
         }
 
         [HttpPost("batch")]
-        public async Task<IActionResult> AddBatchProducts([FromBody] IEnumerable<ProductDtoRequest> products)
+        public async Task<IActionResult> AddBatchProducts([FromBody] IEnumerable<ProductDtoRequest> productsRequest)
         {
-            if (products.Count() == 0)
+            if (productsRequest.Count() == 0)
             {
                 return NoContent();
             }
@@ -76,11 +76,11 @@ namespace CustomerManagement.Controllers
 
             try
             {
-                var result = _productServices.AddBatchProducts(products);
+                var result = _productServices.AddBatchProducts(productsRequest);
 
                 if (!result.Success)
                 {
-                    return StatusCode(result.StatusCode, result.Message);
+                    return StatusCode(statusCode: result.StatusCode, value: result.Message);
                 }
 
                 await _dbContext.SaveChangesAsync();
@@ -90,7 +90,7 @@ namespace CustomerManagement.Controllers
 
                 foreach (var product in result.Data)
                 {
-                    var newProductDtoResponse = _productServices.GetByCode(product.Code);
+                    var newProductDtoResponse = _productServices.GetByCode(code: product.Code);
                     listProductsDtoResponse.Add(newProductDtoResponse);
                 }
 
@@ -101,6 +101,22 @@ namespace CustomerManagement.Controllers
                 await transaction.RollbackAsync();
                 return StatusCode(500, err.Message);
             }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateProduct(int id, [FromBody] ProductDtoRequest productRequest)
+        {
+            var result = _productServices.UpdateProduct(id: id, productRequest: productRequest);
+            if (!result.Success)
+            {
+                return StatusCode(statusCode: result.StatusCode, value: result.Message);
+            }
+
+            _dbContext.SaveChanges();
+
+            var newProductDtoResponse = _productServices.GetByCode(code: result.Data.Code);
+
+            return Ok(newProductDtoResponse);
         }
     }
 }

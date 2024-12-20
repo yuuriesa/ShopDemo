@@ -18,7 +18,6 @@ namespace CustomerManagement.Models
             Id = id;
             _code = code;
             _name = name;
-            Validate();
         }
 
         //public methods

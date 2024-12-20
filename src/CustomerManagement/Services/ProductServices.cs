@@ -1,17 +1,21 @@
+using CustomerManagement.Data;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using CustomerManagement.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerManagement.Services
 {
     public class ProductServices : IProductServices
     {
         private IProductRepository _productRepository;
+        private ApplicationDbContext _dbContext;
 
-        public ProductServices(IProductRepository productRepository)
+        public ProductServices(IProductRepository productRepository, ApplicationDbContext dbContext)
         {
             _productRepository = productRepository;
+            _dbContext = dbContext;
         }
 
         public ServiceResult<Product> Add(ProductDtoRequest product)
@@ -121,6 +125,27 @@ namespace CustomerManagement.Services
                 Name = product.Name
             };
             return productDtoResponse;
+        }
+
+        public ServiceResult<Product> UpdateProduct(int id, ProductDtoRequest productRequest)
+        {
+            var findProductById = _dbContext.Products.AsNoTracking().FirstOrDefault(p =>  p.Id == id);
+            if (findProductById == null)
+            {
+                return ServiceResult<Product>.ErrorResult(message: ResponseMessagesCustomers.ProductNotFoundMessage, statusCode: 404);
+            }
+
+            //Preencher nova instancia com o estado do banco de dados atual com os novos dados
+            var setCurrentProduct = Product.SetExistingInfo(id: findProductById.Id, code: productRequest.Code, name: productRequest.Name);
+
+            if (!setCurrentProduct.IsValid)
+            {
+                return ServiceResult<Product>.ErrorResult(message: ResponseMessagesCustomers.FieldsAreInvalidProduct, statusCode: 400);
+            }
+
+            _productRepository.Update(id: id, entity: setCurrentProduct);
+
+            return ServiceResult<Product>.SuccessResult(data: setCurrentProduct);
         }
     }
 }
