@@ -135,5 +135,20 @@ namespace CustomerManagement.Controllers
 
             return Ok(getProductByCodeForResponse);
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var result = _productServices.Delete(id: id);
+
+            if (!result.Success)
+            {
+                return StatusCode(statusCode: result.StatusCode, value: result.Message);
+            }
+
+            _dbContext.SaveChanges();
+
+            return NoContent();
+        }
     }
 }

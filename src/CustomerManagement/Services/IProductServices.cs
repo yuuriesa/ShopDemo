@@ -13,5 +13,6 @@ namespace CustomerManagement.Services
         public ServiceResult<IEnumerable<Product>> AddBatchProducts(IEnumerable<ProductDtoRequest> products);
         public ServiceResult<Product> UpdateProduct(int id, ProductDtoRequest productRequest);
         public ServiceResult<Product> UpdatePatchProduct(int id, ProductPatchDtoRequest productPatchDtoRequest);
+        public ServiceResult<Product> Delete(int id);
     }
 }

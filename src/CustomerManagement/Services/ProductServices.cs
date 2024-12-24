@@ -87,6 +87,20 @@ namespace CustomerManagement.Services
             return ServiceResult<IEnumerable<Product>>.SuccessResult(listProducts, 201);
         }
 
+        public ServiceResult<Product> Delete(int id)
+        {
+            var findProductById = _productRepository.GetById(id: id);
+
+            if (findProductById == null)
+            {
+                return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.ProductNotFoundMessage, 404);
+            }
+
+            _productRepository.Delete(id: id);
+
+            return ServiceResult<Product>.SuccessResult(findProductById);
+        }
+
         public IEnumerable<ProductDtoResponse> GetAll(PaginationFilter paginationFilter)
         {
             var allProducts = _productRepository.GetAll(paginationFilter);
