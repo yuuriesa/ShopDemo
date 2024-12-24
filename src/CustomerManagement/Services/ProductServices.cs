@@ -127,15 +127,41 @@ namespace CustomerManagement.Services
             return productDtoResponse;
         }
 
+        public ServiceResult<Product> UpdatePatchProduct(int id, ProductPatchDtoRequest productPatchDtoRequest)
+        {
+            //Usei o AsNoTracking() ao consultar os dados. Isso evita que a entidade seja rastreada, permitindo que eu substitua ou atualize com uma nova instância sem gerar erros.
+            var findProductById = _dbContext.Products.AsNoTracking().FirstOrDefault(p => p.Id == id);
+
+            if (findProductById == null)
+            {
+                return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.ProductNotFoundMessage, 404);
+            }
+
+            if (productPatchDtoRequest.Name != null)
+            {
+                var updatedProduct = Product.SetExistingInfo(id: findProductById.Id, code: findProductById.Code, name: productPatchDtoRequest.Name);
+                
+                if (!updatedProduct.IsValid)
+                {
+                    return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.FieldsAreInvalidProduct, 422);
+                }
+                
+                _productRepository.Update(id: id, entity: updatedProduct);
+            };
+
+            return ServiceResult<Product>.SuccessResult(findProductById);
+        }
+
         public ServiceResult<Product> UpdateProduct(int id, ProductDtoRequest productRequest)
         {
+            //Usei o AsNoTracking() ao consultar os dados. Isso evita que a entidade seja rastreada, permitindo que eu substitua ou atualize com uma nova instância sem gerar erros.
             var findProductById = _dbContext.Products.AsNoTracking().FirstOrDefault(p =>  p.Id == id);
             if (findProductById == null)
             {
                 return ServiceResult<Product>.ErrorResult(message: ResponseMessagesCustomers.ProductNotFoundMessage, statusCode: 404);
             }
 
-            //Preencher nova instancia com o estado do banco de dados atual com os novos dados
+            //Preencher nova instancia com o id do estado do banco de dados atual com os novos dados
             var setCurrentProduct = Product.SetExistingInfo(id: findProductById.Id, code: productRequest.Code, name: productRequest.Name);
 
             if (!setCurrentProduct.IsValid)
@@ -146,6 +172,6 @@ namespace CustomerManagement.Services
             _productRepository.Update(id: id, entity: setCurrentProduct);
 
             return ServiceResult<Product>.SuccessResult(data: setCurrentProduct);
-        }
+        }        
     }
 }

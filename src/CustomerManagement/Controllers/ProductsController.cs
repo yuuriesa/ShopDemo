@@ -118,5 +118,22 @@ namespace CustomerManagement.Controllers
 
             return Ok(newProductDtoResponse);
         }
+
+        [HttpPatch("{id}")]
+        public IActionResult UpdatePatchProduct(int id, [FromBody] ProductPatchDtoRequest productPatchDtoRequest)
+        {
+            var result = _productServices.UpdatePatchProduct(id: id, productPatchDtoRequest: productPatchDtoRequest);
+
+            if (!result.Success)
+            {
+                return StatusCode(statusCode: result.StatusCode, value: result.Message);
+            }
+
+            _dbContext.SaveChanges();
+
+            var getProductByCodeForResponse = _productServices.GetByCode(result.Data.Code);
+
+            return Ok(getProductByCodeForResponse);
+        }
     }
 }
