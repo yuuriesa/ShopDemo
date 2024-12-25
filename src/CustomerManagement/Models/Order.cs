@@ -45,12 +45,15 @@ namespace CustomerManagement.Models
         (
             int number,
             DateTime date,
+            int customerId,
             List<Item> itens
         )
         {
             var order = new Order();
             order.SetNumber(number: number);
             order.SetDate(date: date);
+            order.SetCustomerId(customerId: customerId);
+            order.SetItens(itens: itens);
             order.SetTotalOrderValue(itens: itens);
             order.Validate();
 
@@ -107,6 +110,26 @@ namespace CustomerManagement.Models
         {
             var totalValue = from item in itens select item.TotalValue;
             _totalOrderValue = totalValue.Sum();
+        }
+
+        private void SetCustomerId(int customerId)
+        {
+            if (customerId < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(customerId), "customerId must be greater than zero");
+            }
+
+            _customerId = customerId;
+        }
+
+        private void SetItens(List<Item> itens)
+        {
+            if (itens.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(itens), "The order must have at least one item.");
+            }
+
+            Itens = itens;
         }
 
         private void Validate()
