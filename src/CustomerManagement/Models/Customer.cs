@@ -11,5 +11,6 @@ namespace CustomerManagement.Models
         public string Email { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public ICollection<Address> Addresses { get; set; } = new List<Address>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

@@ -51,6 +51,11 @@ namespace CustomerManagement.Data
                     .WithOne()
                     .HasForeignKey("CustomerId")
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(c => c.Orders)
+                    .WithOne()
+                    .HasForeignKey("CustomerId")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Address>(entity =>
@@ -99,8 +104,61 @@ namespace CustomerManagement.Data
                 entity.HasOne(a => a.Customer)
                 .WithMany(c => c.Addresses)
                 .HasForeignKey(a => a.CustomerId);
-                //.OnDelete(DeleteBehavior.Restrict);
             });
+
+            modelBuilder.Entity<Order>(entity =>
+                {
+                    entity.HasKey(o => o.OrderId);
+
+                    entity.Property(o => o.Number)
+                    .HasColumnName("Number")
+                    .IsRequired();
+
+                    entity.Property(o => o.Date)
+                    .IsRequired()
+                    .HasDefaultValue(DateTime.Now) //DateOnly.FromDateTime(DateTime.Now)
+                    .HasColumnName("Date");
+
+                    entity.HasOne(c => c.Customer)
+                    .WithMany(o => o.Orders)
+                    .HasForeignKey(c => c.CustomerId);
+
+                    entity.HasMany(o => o.Itens)
+                    .WithOne()
+                    .HasForeignKey("OrderId")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                    entity.Property(o => o.TotalOrderValue)
+                    .HasColumnName("TotalOrderValue")
+                    .IsRequired();
+                }
+            );
+
+            modelBuilder.Entity<Item>(entity =>
+                {
+                    entity.HasKey(i => i.ItemId);
+
+                    entity.Property(i => i.QuantityOfItens)
+                    .HasColumnName("QuantityOfItens")
+                    .IsRequired();
+
+                    entity.Property(i => i.UnitValue)
+                    .HasColumnName("UnitValue")
+                    .IsRequired();
+
+                    entity.Property(i => i.TotalValue)
+                    .HasColumnName("TotalValue")
+                    .IsRequired();
+
+                    entity.HasOne(o => o.Order)
+                    .WithMany(i => i.Itens)
+                    .HasForeignKey("OrderId");
+
+                    entity.HasOne(p => p.Product)
+                    .WithOne(p => p.Item)
+                    .HasForeignKey<Product>(p => p.ItemId);
+                }
+            );
 
             modelBuilder.Entity<Product>(entity =>
                 {
@@ -118,6 +176,10 @@ namespace CustomerManagement.Data
                     .HasMaxLength(40)
                     .HasColumnName("Name")
                     .IsRequired();
+
+                    entity.HasOne(i => i.Item)
+                    .WithOne(p => p.Product)
+                    .HasForeignKey<Product>(p => p.ItemId);
 
                     entity.Ignore(p => p.IsValid);
                 }

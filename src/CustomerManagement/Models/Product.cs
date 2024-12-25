@@ -7,6 +7,8 @@ namespace CustomerManagement.Models
         private string _name { get; set; }
         public string Code => _code;
         public string Name => _name;
+        public int ItemId { get; set; }
+        public Item Item { get; set; }
 
         public bool IsValid { get; private set; }
 
