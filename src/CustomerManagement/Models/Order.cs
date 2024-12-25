@@ -28,6 +28,7 @@ namespace CustomerManagement.Models
             int customerId,
             int number,
             DateTime date,
+            List<Item> itens,
             decimal totalOrderValue
         )
         {
@@ -35,6 +36,7 @@ namespace CustomerManagement.Models
             _customerId = customerId;
             _number = number;
             _date = date;
+            Itens = itens;
             _totalOrderValue = totalOrderValue;
         }
 
@@ -42,12 +44,14 @@ namespace CustomerManagement.Models
         public static Order RegisterNew
         (
             int number,
-            DateTime date
+            DateTime date,
+            List<Item> itens
         )
         {
             var order = new Order();
             order.SetNumber(number: number);
             order.SetDate(date: date);
+            order.SetTotalOrderValue(itens: itens);
             order.Validate();
 
             return order;
@@ -59,6 +63,7 @@ namespace CustomerManagement.Models
             int customerId,
             int number,
             DateTime date,
+            List<Item> itens,
             decimal totalOrderValue
         )
         {
@@ -68,6 +73,7 @@ namespace CustomerManagement.Models
                 customerId: customerId,
                 number: number,
                 date: date,
+                itens: itens,
                 totalOrderValue: totalOrderValue
             );
             order.Validate();
@@ -95,6 +101,12 @@ namespace CustomerManagement.Models
             }
 
             _date = date;
+        }
+
+        private void SetTotalOrderValue(List<Item> itens)
+        {
+            var totalValue = from item in itens select item.TotalValue;
+            _totalOrderValue = totalValue.Sum();
         }
 
         private void Validate()
