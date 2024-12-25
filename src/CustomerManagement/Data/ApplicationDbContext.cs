@@ -110,11 +110,11 @@ namespace CustomerManagement.Data
                 {
                     entity.HasKey(o => o.OrderId);
 
-                    entity.Property(o => o.Number)
+                    entity.Property<int>("_number")
                     .HasColumnName("Number")
                     .IsRequired();
 
-                    entity.Property(o => o.Date)
+                    entity.Property<DateTime>("_date")
                     .IsRequired()
                     .HasDefaultValue(DateTime.Now) //DateOnly.FromDateTime(DateTime.Now)
                     .HasColumnName("Date");
@@ -128,9 +128,11 @@ namespace CustomerManagement.Data
                     .HasForeignKey("OrderId")
                     .OnDelete(DeleteBehavior.Restrict);
 
-                    entity.Property(o => o.TotalOrderValue)
+                    entity.Property<decimal>("_totalOrderValue")
                     .HasColumnName("TotalOrderValue")
                     .IsRequired();
+
+                    entity.Ignore(o => o.IsValid);
                 }
             );
 
@@ -138,12 +140,16 @@ namespace CustomerManagement.Data
                 {
                     entity.HasKey(i => i.ItemId);
 
-                    entity.Property(i => i.QuantityOfItens)
+                    entity.Property<int>("_quantityOfItens")
                     .HasColumnName("QuantityOfItens")
                     .IsRequired();
 
-                    entity.Property(i => i.UnitValue)
+                    entity.Property<decimal>("_unitValue")
                     .HasColumnName("UnitValue")
+                    .IsRequired();
+
+                    entity.Property(i => i.OrderId)
+                    .HasColumnName("OrderId")
                     .IsRequired();
 
                     entity.Property(i => i.TotalValue)
@@ -152,11 +158,13 @@ namespace CustomerManagement.Data
 
                     entity.HasOne(o => o.Order)
                     .WithMany(i => i.Itens)
-                    .HasForeignKey("OrderId");
+                    .HasForeignKey(i => i.OrderId);
 
                     entity.HasOne(p => p.Product)
                     .WithOne(p => p.Item)
                     .HasForeignKey<Product>(p => p.ItemId);
+
+                    entity.Ignore(p => p.IsValid);
                 }
             );
 
@@ -179,7 +187,7 @@ namespace CustomerManagement.Data
 
                     entity.HasOne(i => i.Item)
                     .WithOne(p => p.Product)
-                    .HasForeignKey<Product>(p => p.ItemId);
+                    .HasForeignKey<Item>(p => p.ItemId);
 
                     entity.Ignore(p => p.IsValid);
                 }
