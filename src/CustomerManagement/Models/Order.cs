@@ -87,7 +87,7 @@ namespace CustomerManagement.Models
         // private methods
         private void SetNumber(int number)
         {
-            if (number < 0)
+            if (number < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "number must be greater than zero");
             }
@@ -114,7 +114,7 @@ namespace CustomerManagement.Models
 
         private void SetCustomerId(int customerId)
         {
-            if (customerId < 0)
+            if (customerId <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(customerId), "customerId must be greater than zero");
             }
