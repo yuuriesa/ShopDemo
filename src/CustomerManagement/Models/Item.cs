@@ -16,6 +16,7 @@ namespace CustomerManagement.Models
         public int OrderId { get; private set; } //cada item do pedido deve ter o id do pedido
         [JsonIgnore]
         public Order Order { get; set; }
+        public string Code { get; private set; }
 
         public bool IsValid { get; private set; }
 
@@ -28,7 +29,8 @@ namespace CustomerManagement.Models
             Product product,
             int orderId,
             int quantityOfItens,
-            decimal unitValue
+            decimal unitValue,
+            string code
         )
         {
             ItemId = itemId;
@@ -36,6 +38,7 @@ namespace CustomerManagement.Models
             OrderId = orderId;
             _quantityOfItens = quantityOfItens;
             _unitValue = unitValue;
+            Code = code;
         }
 
         //public methods
@@ -58,7 +61,7 @@ namespace CustomerManagement.Models
 
         public static Item SetExistingInfo(int itemId, Product product, int orderId, int quantityOfItens, decimal unitValue)
         {
-            var item = new Item(itemId: itemId, product: product, orderId: orderId, quantityOfItens: quantityOfItens, unitValue: unitValue);
+            var item = new Item(itemId: itemId, product: product, orderId: orderId, quantityOfItens: quantityOfItens, unitValue: unitValue, code: product.Code);
             item.Validate();
 
             return item;
@@ -88,6 +91,7 @@ namespace CustomerManagement.Models
         private void SetProduct(Product product)
         {
             Product = product;
+            Code = product.Code;
         }
 
         private void SetTotalValue()
