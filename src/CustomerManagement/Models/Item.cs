@@ -16,7 +16,7 @@ namespace CustomerManagement.Models
         public int OrderId { get; private set; } //cada item do pedido deve ter o id do pedido
         [JsonIgnore]
         public Order Order { get; set; }
-        public string Code { get; private set; }
+        public string Code { get; private set; } //código do produto
 
         public bool IsValid { get; private set; }
 

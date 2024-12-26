@@ -162,9 +162,9 @@ namespace CustomerManagement.Data
                     .WithMany(i => i.Itens)
                     .HasForeignKey(i => i.OrderId);
 
-                    entity.HasOne(p => p.Product)
-                    .WithOne(p => p.Item)
-                    .HasForeignKey<Product>(p => p.ItemId);
+                    // entity.HasOne(p => p.Product)
+                    // .WithOne(p => p.Item)
+                    // .HasForeignKey<Product>(p => p.ItemId);
 
                     entity.Ignore(p => p.IsValid);
                 }
