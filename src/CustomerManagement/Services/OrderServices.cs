@@ -40,16 +40,30 @@ namespace CustomerManagement.Services
                 throw new Exception("Customer not found");
             }
 
+            // var findProducts = from item in orderDtoRequest.Itens
+            //                   from product in _dbContext.Products
+            //                   where item.Product.Code == product.Code
+            //                   select product;
+            
+
+
             foreach (var item in orderDtoRequest.Itens)
             {
-                var product = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
+                var findProduct = _productServices.GetByCode(item.Product.Code);
+
+                if (findProduct == null)
+                {
+                    throw new Exception($"This Product not exists: {item.Product.Code}");
+                }
+
+                var product = Product.SetExistingInfo(id: findProduct!.Id, code: item.Product.Code, name: item.Product.Name);
 
                 if (!product.IsValid)
                 {
                     throw new Exception("Product is not valid");
                 }
 
-                _productRepository.Add(product);
+                //_productRepository.Add(product);
 
                 var newItem = Item.RegisterNew
                 (

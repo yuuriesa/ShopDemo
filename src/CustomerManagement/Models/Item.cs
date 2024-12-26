@@ -12,7 +12,7 @@ namespace CustomerManagement.Models
         public int QuantityOfItens => _quantityOfItens; //quantidade de itens
         public decimal UnitValue => _unitValue; //valor unitário
         public decimal TotalValue { get; private set; } //valor total do item
-        public Product Product { get; private set; } //cada item do pedido deve ter o produto
+        public int ProductId { get; private set; } //cada item do pedido deve ter o produto
         public int OrderId { get; private set; } //cada item do pedido deve ter o id do pedido
         [JsonIgnore]
         public Order Order { get; set; }
@@ -34,7 +34,7 @@ namespace CustomerManagement.Models
         )
         {
             ItemId = itemId;
-            Product = product;
+            ProductId = product.Id;
             OrderId = orderId;
             _quantityOfItens = quantityOfItens;
             _unitValue = unitValue;
@@ -90,7 +90,7 @@ namespace CustomerManagement.Models
 
         private void SetProduct(Product product)
         {
-            Product = product;
+            ProductId = product.Id;
             Code = product.Code;
         }
 
@@ -101,7 +101,7 @@ namespace CustomerManagement.Models
 
         private void Validate()
         {
-            IsValid = _unitValue > 0 && _quantityOfItens > 0 && Product.IsValid;
+            IsValid = _unitValue > 0 && _quantityOfItens > 0;
         }
     }
 }
