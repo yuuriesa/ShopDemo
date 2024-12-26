@@ -187,9 +187,9 @@ namespace CustomerManagement.Data
                     .HasColumnName("Name")
                     .IsRequired();
 
-                    entity.HasOne(i => i.Item)
-                    .WithOne(p => p.Product)
-                    .HasForeignKey<Item>(p => p.ItemId);
+                    // entity.HasOne(i => i.Item)
+                    // .WithOne(p => p.Product)
+                    // .HasForeignKey<Item>("ItemId");
 
                     entity.Ignore(p => p.IsValid);
                 }
