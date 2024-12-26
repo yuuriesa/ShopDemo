@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using CustomerManagement.Utils;
 
 namespace CustomerManagement.Models
 {
@@ -89,7 +90,7 @@ namespace CustomerManagement.Models
         {
             if (number < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(number), "number must be greater than zero");
+                throw new ArgumentOutOfRangeException(nameof(number), ResponseMessagesCustomers.NumberGreaterThanZero);
             }
 
             _number = number;
@@ -100,7 +101,7 @@ namespace CustomerManagement.Models
             var dateNow = DateTime.UtcNow;
             if (date.ToUniversalTime().Date > dateNow.Date)
             {
-                throw new ArgumentOutOfRangeException(nameof(date), "You cannot put the date with the day after today.");
+                throw new ArgumentOutOfRangeException(nameof(date), ResponseMessagesCustomers.OrderDateError);
             }
 
             _date = date;
@@ -116,7 +117,7 @@ namespace CustomerManagement.Models
         {
             if (customerId <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(customerId), "customerId must be greater than zero");
+                throw new ArgumentOutOfRangeException(nameof(customerId), ResponseMessagesCustomers.CustomerIdMustBeGreaterThanZero);
             }
 
             _customerId = customerId;
@@ -126,7 +127,7 @@ namespace CustomerManagement.Models
         {
             if (itens.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(itens), "The order must have at least one item.");
+                throw new ArgumentOutOfRangeException(nameof(itens), ResponseMessagesCustomers.OrderMustHaveAtLeastOneItem);
             }
 
             Itens = itens;

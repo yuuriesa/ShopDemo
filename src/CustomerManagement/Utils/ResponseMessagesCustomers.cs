@@ -36,5 +36,11 @@ namespace CustomerManagement.Utils
         public const string MaximumCharacters = "Must have a maximum of 40 characters";
         public const string EmailFieldIsNotAValid = "The Email field is not a valid e-mail address.";
         public const string DuplicateCodesInInputBatchProduct = "Duplicate Code(s) found in input";
+
+        //Order Messages
+        public const string NumberGreaterThanZero = "number must be greater than zero";
+        public const string OrderDateError = "You cannot put the date with the day after today.";
+        public const string OrderMustHaveAtLeastOneItem = "The order must have at least one item.";
+        public const string CustomerIdMustBeGreaterThanZero = "customerId must be greater than zero";
     }
 }
