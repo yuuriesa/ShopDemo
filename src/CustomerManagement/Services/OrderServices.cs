@@ -43,7 +43,7 @@ namespace CustomerManagement.Services
 
             List<Item> listItens = new List<Item>();
 
-            var customer = _customerRepository.GetById(orderDtoRequest.CustomerId);
+            var customer = _customerRepository.GetByEmail(orderDtoRequest.Customer.Email);
 
             if (customer == null)
             {
@@ -81,7 +81,7 @@ namespace CustomerManagement.Services
             (
                 number: orderDtoRequest.Number,
                 date: orderDtoRequest.Date,
-                customerId: orderDtoRequest.CustomerId,
+                customerId: customer.CustomerId,
                 itens: listItens
             );
 
