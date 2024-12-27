@@ -7,5 +7,6 @@ namespace CustomerManagement.Services
     public interface IOrderServices
     {
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest);
+        public OrderDtoResponse GenerateOrderDtoResponse(Order order);
     }
 }

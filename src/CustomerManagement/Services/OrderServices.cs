@@ -94,5 +94,37 @@ namespace CustomerManagement.Services
 
             return ServiceResult<Order>.SuccessResult(order, 201);
         }
+    
+        public OrderDtoResponse GenerateOrderDtoResponse(Order order)
+        {
+            var listItens = new List<ItemDtoResponse>();
+
+            var newOrderDtoReponse = new OrderDtoResponse();
+
+            newOrderDtoReponse.Number = order.Number;
+            newOrderDtoReponse.Date = order.Date;
+            newOrderDtoReponse.CustomerId = order.CustomerId;
+            newOrderDtoReponse.TotalOrderValue = order.TotalOrderValue;
+
+            foreach (var item in order.Itens)
+            {
+                var getProduct = _productServices.GetByCode(item.Code);
+
+                var newItemDtoResponse = new ItemDtoResponse()
+                {
+                    Product = getProduct,
+                    QuantityOfItens = item.QuantityOfItens,
+                    UnitValue = item.UnitValue
+                };
+
+                listItens.Add(newItemDtoResponse);
+            }
+
+            newOrderDtoReponse.Itens = listItens;
+
+            return newOrderDtoReponse;
+
+        }
+
     }
 }

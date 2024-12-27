@@ -35,7 +35,9 @@ namespace CustomerManagement.Controllers
 
             _dbContext.SaveChanges();
 
-            return CreatedAtAction(nameof(Add), new { id = result.Data.OrderId} , value: result.Data);
+            var orderReponse = _orderServices.GenerateOrderDtoResponse(order: result.Data);
+
+            return CreatedAtAction(nameof(Add), new { OrderId = result.Data.OrderId} , value: orderReponse);
         }
     }
 }
