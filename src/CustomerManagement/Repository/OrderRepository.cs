@@ -12,5 +12,17 @@ namespace CustomerManagement.Repository
         {
             _dbContext = context;
         }
+
+        public bool GetOrderByNumber(int number)
+        {
+            var numberExists = _dbContext.Orders.ToList().FirstOrDefault(o => o.Number == number);
+            
+            if (numberExists != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

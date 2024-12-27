@@ -6,6 +6,6 @@ namespace CustomerManagement.Repository
 {
     public interface IOrderRepository : IRepositoryBase<Order>
     {
-        
+        public bool GetOrderByNumber(int number);
     }
 }

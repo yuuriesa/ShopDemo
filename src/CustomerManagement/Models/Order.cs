@@ -136,7 +136,7 @@ namespace CustomerManagement.Models
         private void Validate()
         {
             var dateNow = DateTime.UtcNow;
-            IsValid = _number > 0 && _date.ToUniversalTime().Date < dateNow.Date && _totalOrderValue > 0 && _customerId > 0 && Itens.Count > 0;
+            IsValid = _number > 0 && _date.ToUniversalTime().Date <= dateNow.Date && _totalOrderValue > 0 && _customerId > 0 && Itens.Count > 0;
         }
     }
 }

@@ -34,6 +34,13 @@ namespace CustomerManagement.Services
 
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
+            var numberExists = _orderRepository.GetOrderByNumber(number: orderDtoRequest.Number);
+            
+            if (numberExists is true)
+            {
+                return ServiceResult<Order>.ErrorResult(message: "This Order with this Number Exists", statusCode: 400);
+            } 
+
             var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: orderDtoRequest.Date);
 
             if (verifyIfDateIsNotValid)
