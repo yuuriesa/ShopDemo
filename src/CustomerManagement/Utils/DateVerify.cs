@@ -2,7 +2,7 @@ namespace CustomerManagement.Utils
 {
     public class DateVerify
     {
-        public bool CheckIfTheDateIsGreaterThanToday(DateTime datetime)
+        public static bool CheckIfTheDateIsGreaterThanToday(DateTime datetime)
         {
             var dateNow = DateTime.UtcNow;
 

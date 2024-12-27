@@ -5,6 +5,7 @@ using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using CustomerManagement.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CustomerManagement.Services
 {
@@ -33,6 +34,13 @@ namespace CustomerManagement.Services
 
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
+            var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(orderDtoRequest.Date);
+
+            if (verifyIfDateIsNotValid)
+            {
+                return ServiceResult<Order>.ErrorResult(ResponseMessagesCustomers.DateWithTheDayAfterToday, 400);
+            }
+
             List<Item> listItens = new List<Item>();
 
             var customer = _customerRepository.GetById(orderDtoRequest.CustomerId);

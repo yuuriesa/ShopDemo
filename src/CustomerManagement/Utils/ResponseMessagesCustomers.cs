@@ -42,5 +42,6 @@ namespace CustomerManagement.Utils
         public const string OrderDateError = "You cannot put the date with the day after today.";
         public const string OrderMustHaveAtLeastOneItem = "The order must have at least one item.";
         public const string CustomerIdMustBeGreaterThanZero = "customerId must be greater than zero";
+        public const string DateWithTheDayAfterToday = "You cannot put the date with the day after today.";
     }
 }
