@@ -6,6 +6,6 @@ namespace CustomerManagement.Services
 {
     public interface IOrderServices
     {
-        public void Add(OrderDtoRequest orderDtoRequest);
+        public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest);
     }
 }

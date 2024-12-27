@@ -26,8 +26,16 @@ namespace CustomerManagement.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] OrderDtoRequest orderDtoRequest)
         {
-            _orderServices.Add(orderDtoRequest: orderDtoRequest);
-            return Ok();
+            var result = _orderServices.Add(orderDtoRequest: orderDtoRequest);
+
+            if (!result.Success)
+            {
+                return StatusCode(statusCode: result.StatusCode, value: result.Message);
+            }
+
+            _dbContext.SaveChanges();
+
+            return CreatedAtAction(nameof(Add), new { id = result.Data.OrderId} , value: result.Data);
         }
     }
 }

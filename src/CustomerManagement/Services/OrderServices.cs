@@ -1,3 +1,4 @@
+using Azure;
 using CustomerManagement.Data;
 using CustomerManagement.DTO;
 using CustomerManagement.Models;
@@ -30,22 +31,16 @@ namespace CustomerManagement.Services
             _productServices = productServices;
         }
 
-        public void Add(OrderDtoRequest orderDtoRequest)
+        public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
             List<Item> listItens = new List<Item>();
+
             var customer = _customerRepository.GetById(orderDtoRequest.CustomerId);
 
             if (customer == null)
             {
-                throw new Exception("Customer not found");
+                return ServiceResult<Order>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
             }
-
-            // var findProducts = from item in orderDtoRequest.Itens
-            //                   from product in _dbContext.Products
-            //                   where item.Product.Code == product.Code
-            //                   select product;
-            
-
 
             foreach (var item in orderDtoRequest.Itens)
             {
@@ -53,17 +48,15 @@ namespace CustomerManagement.Services
 
                 if (findProduct == null)
                 {
-                    throw new Exception($"This Product not exists: {item.Product.Code}");
+                    return ServiceResult<Order>.ErrorResult($"{ResponseMessagesCustomers.ProductNotFoundMessage}. Code: {item.Product.Code}", 404);
                 }
 
                 var product = Product.SetExistingInfo(id: findProduct!.Id, code: item.Product.Code, name: item.Product.Name);
 
                 if (!product.IsValid)
                 {
-                    throw new Exception("Product is not valid");
+                    return ServiceResult<Order>.ErrorResult(ResponseMessagesCustomers.FieldsAreInvalidProduct, 400);
                 }
-
-                //_productRepository.Add(product);
 
                 var newItem = Item.RegisterNew
                 (
@@ -83,8 +76,15 @@ namespace CustomerManagement.Services
                 customerId: orderDtoRequest.CustomerId,
                 itens: listItens
             );
+
+            if (!order.IsValid)
+            {
+                return ServiceResult<Order>.ErrorResult("fields in order are invalid", 400);
+            }
+
             _orderRepository.Add(order);
-            _dbContext.SaveChanges();
+
+            return ServiceResult<Order>.SuccessResult(order, 201);
         }
     }
 }
