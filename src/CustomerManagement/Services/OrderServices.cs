@@ -34,8 +34,6 @@ namespace CustomerManagement.Services
 
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
-            // Preciso verificar se o primeiro nome e último nome além da data dele corresponde ao do banco de dados. 
-
             var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: orderDtoRequest.Date);
 
             if (verifyIfDateIsNotValid)
@@ -50,6 +48,16 @@ namespace CustomerManagement.Services
             if (customer == null)
             {
                 return ServiceResult<Order>.ErrorResult(message: ResponseMessagesCustomers.CustomerNotFoundMessage, statusCode: 404);
+            }
+
+            if
+            (
+                customer.FirstName != orderDtoRequest.Customer.FirstName ||
+                customer.LastName != orderDtoRequest.Customer.LastName ||
+                customer.DateOfBirth != DateOnly.FromDateTime(orderDtoRequest.Customer.DateOfBirth)
+            )
+            {
+                return ServiceResult<Order>.ErrorResult(message: "This Customer has an invalid fields", statusCode: 400);
             }
 
             foreach (var item in orderDtoRequest.Itens)
