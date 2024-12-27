@@ -34,29 +34,36 @@ namespace CustomerManagement.Services
 
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
-            var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(orderDtoRequest.Date);
+            // Preciso verificar se o primeiro nome e último nome além da data dele corresponde ao do banco de dados. 
+
+            var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: orderDtoRequest.Date);
 
             if (verifyIfDateIsNotValid)
             {
-                return ServiceResult<Order>.ErrorResult(ResponseMessagesCustomers.DateWithTheDayAfterToday, 400);
+                return ServiceResult<Order>.ErrorResult(message: ResponseMessagesCustomers.DateWithTheDayAfterToday, statusCode: 400);
             }
 
             List<Item> listItens = new List<Item>();
 
-            var customer = _customerRepository.GetByEmail(orderDtoRequest.Customer.Email);
+            var customer = _customerRepository.GetByEmail(email: orderDtoRequest.Customer.Email);
 
             if (customer == null)
             {
-                return ServiceResult<Order>.ErrorResult(ResponseMessagesCustomers.CustomerNotFoundMessage, 404);
+                return ServiceResult<Order>.ErrorResult(message: ResponseMessagesCustomers.CustomerNotFoundMessage, statusCode: 404);
             }
 
             foreach (var item in orderDtoRequest.Itens)
             {
-                var findProduct = _productServices.GetByCode(item.Product.Code);
+                var findProduct = _productServices.GetByCode(code: item.Product.Code);
 
                 if (findProduct == null)
                 {
-                    return ServiceResult<Order>.ErrorResult($"{ResponseMessagesCustomers.ProductNotFoundMessage}. Code: {item.Product.Code}", 404);
+                    return ServiceResult<Order>.ErrorResult(message: $"{ResponseMessagesCustomers.ProductNotFoundMessage}. Code: {item.Product.Code}", statusCode: 404);
+                }
+
+                if (findProduct.Name != item.Product.Name)
+                {
+                    return ServiceResult<Order>.ErrorResult(message: $"This product with this code: {item.Product.Code} has an invalid name", statusCode: 400);
                 }
 
                 var product = Product.SetExistingInfo(id: findProduct!.Id, code: item.Product.Code, name: item.Product.Name);
