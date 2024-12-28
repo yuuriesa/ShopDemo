@@ -132,6 +132,20 @@ namespace CustomerManagement.Services
 
             foreach (var order in listOrderDtoRequest)
             {
+                var numberExists = _orderRepository.GetOrderByNumber(number: order.Number);
+            
+                if (numberExists is true)
+                {
+                    return ServiceResult<IEnumerable<Order>>.ErrorResult(message: "This Order with this Number Exists", statusCode: 400);
+                } 
+
+                var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: order.Date);
+
+                if (verifyIfDateIsNotValid)
+                {
+                    return ServiceResult<IEnumerable<Order>>.ErrorResult(message: ResponseMessagesCustomers.DateWithTheDayAfterToday, statusCode: 400);
+                }
+
                 var customer = _customerServices.GetByEmail(order.Customer.Email);
 
                 foreach (var item in order.Itens)
