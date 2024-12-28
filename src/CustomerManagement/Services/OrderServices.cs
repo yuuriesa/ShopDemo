@@ -131,34 +131,19 @@ namespace CustomerManagement.Services
 
             foreach (var order in listOrderDtoRequest)
             {
-                var customerDto = new CustomerDto()
-                {
-                    FirstName = order.Customer.FirstName,
-                    LastName = order.Customer.LastName,
-                    Email = order.Customer.Email,
-                    DateOfBirth = order.Customer.DateOfBirth,
-                    Addresses = order.Customer.Addresses!
-                };
-                var newCustomer = _customerServices.GenerateListAddressForCustomerAndReturnCustomer(customer: customerDto);
-
-                var customer = _customerRepository.Add(entity: newCustomer);
-
-                _dbContext.SaveChanges();
+                var customer = _customerServices.GetByEmail(order.Customer.Email);
 
                 foreach (var item in order.Itens)
                 {
-                    var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
+                    var getProduct = _productServices.GetByCode(item.Product.Code);
+                    var setProduct = Product.SetExistingInfo(id: getProduct.Id, code: item.Product.Code, name: item.Product.Name);
 
-                    if (!newProduct.IsValid)
+                    if (!setProduct.IsValid)
                     {
                         throw new Exception("Product is not valid");
                     }
 
-                    _productRepository.Add(entity: newProduct);
-
-                     _dbContext.SaveChanges();
-
-                    var newItem = Item.RegisterNew(product: newProduct, unitValue: item.UnitValue, quantityOfItens: item.QuantityOfItens);
+                    var newItem = Item.RegisterNew(product: setProduct, unitValue: item.UnitValue, quantityOfItens: item.QuantityOfItens);
 
                     if (!newItem.IsValid)
                     {
@@ -177,12 +162,72 @@ namespace CustomerManagement.Services
                 );
 
                 _orderRepository.Add(entity: newOrder);
-                _dbContext.SaveChanges();
             }
 
-            var i = new List<Order>();
+            return ServiceResult<IEnumerable<Order>>.SuccessResult(new List<Order>());
+        }
 
-            return ServiceResult<IEnumerable<Order>>.SuccessResult(i);
+        public void CreateCustomerForOrderIfCustomerDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
+        {
+            foreach (var order in listOrderDtoRequest)
+            {
+                var customerDto = new CustomerDto()
+                {
+                    FirstName = order.Customer.FirstName,
+                    LastName = order.Customer.LastName,
+                    Email = order.Customer.Email,
+                    DateOfBirth = order.Customer.DateOfBirth,
+                    Addresses = order.Customer.Addresses!
+                };
+
+                // passo 2 - 
+                 var dateIsValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: customerDto.DateOfBirth);
+
+                if (dateIsValid) throw new Exception(ResponseMessagesCustomers.DateOfBirthError);
+
+                var findCustomerByEmail = _customerServices.GetByEmail(customerDto.Email);
+
+                //Se o customer existir - fazer depois.
+                //if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.EmailExistsError, 409);
+
+                if (customerDto.Addresses.Count == 0) throw new Exception(ResponseMessagesCustomers.MinimumRegisteredAddressError);
+
+                var checkIfTheCustomerHasARepeatingAddress = _customerServices.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
+
+                if (checkIfTheCustomerHasARepeatingAddress)
+                {
+                    throw new Exception(ResponseMessagesCustomers.DuplicateAddressExistsError);
+                }
+
+                var newCustomer = _customerServices.GenerateListAddressForCustomerAndReturnCustomer(customer: customerDto);
+
+                _customerRepository.Add(entity: newCustomer);
+            }
+        }
+
+        public void CreateProductForOrderIfProductDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
+        {
+            foreach (var order in listOrderDtoRequest)
+            {
+                foreach (var item in order.Itens)
+                    {
+                        //Verificar se o produto existe - resolver depois
+                        // var productWithCodeExists = GetByCode(product.Code);
+
+                        // if (productWithCodeExists != null)
+                        // {
+                        //     return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.ProductWithThisCodeExists, 422);
+                        // }
+                        var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
+
+                        if (!newProduct.IsValid)
+                        {
+                            throw new Exception("Product is not valid");
+                        }
+
+                        _productRepository.Add(entity: newProduct);
+                    }
+            }
         }
     
         public OrderDtoResponse GenerateOrderDtoResponse(Order order)
