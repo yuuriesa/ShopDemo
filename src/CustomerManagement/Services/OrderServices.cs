@@ -187,9 +187,6 @@ namespace CustomerManagement.Services
 
                 var findCustomerByEmail = _customerServices.GetByEmail(customerDto.Email);
 
-                //Se o customer existir - fazer depois.
-                //if (findCustomerByEmail != null) return ServiceResult<Customer>.ErrorResult(ResponseMessagesCustomers.EmailExistsError, 409);
-
                 if (customerDto.Addresses.Count == 0) throw new Exception(ResponseMessagesCustomers.MinimumRegisteredAddressError);
 
                 var checkIfTheCustomerHasARepeatingAddress = _customerServices.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
@@ -211,13 +208,6 @@ namespace CustomerManagement.Services
             {
                 foreach (var item in order.Itens)
                     {
-                        //Verificar se o produto existe - resolver depois
-                        // var productWithCodeExists = GetByCode(product.Code);
-
-                        // if (productWithCodeExists != null)
-                        // {
-                        //     return ServiceResult<Product>.ErrorResult(ResponseMessagesCustomers.ProductWithThisCodeExists, 422);
-                        // }
                         var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
 
                         if (!newProduct.IsValid)
