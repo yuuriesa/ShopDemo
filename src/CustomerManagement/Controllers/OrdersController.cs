@@ -39,5 +39,13 @@ namespace CustomerManagement.Controllers
 
             return CreatedAtAction(nameof(Add), new { OrderId = result.Data.OrderId} , value: orderReponse);
         }
+
+        [HttpPost("batch")]
+        public IActionResult AddBatchOrders([FromBody] IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
+        {
+            var result = _orderServices.AddBatchOrders(listOrderDtoRequests: listOrderDtoRequests);
+
+            return Ok();
+        }
     }
 }

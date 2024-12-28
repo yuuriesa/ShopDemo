@@ -14,6 +14,7 @@ namespace CustomerManagement.Services
         private readonly IOrderRepository _orderRepository;
         private readonly ApplicationDbContext _dbContext;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerServices _customerServices;
         private readonly IProductRepository _productRepository;
         private readonly IProductServices _productServices;
         public OrderServices
@@ -21,6 +22,7 @@ namespace CustomerManagement.Services
             IOrderRepository orderRepository,
             ApplicationDbContext dbContext,
             ICustomerRepository customerRepository,
+            ICustomerServices customerServices,
             IProductRepository productRepository,
             IProductServices productServices
         )
@@ -28,6 +30,7 @@ namespace CustomerManagement.Services
             _orderRepository = orderRepository;
             _dbContext = dbContext;
             _customerRepository = customerRepository;
+            _customerServices = customerServices;
             _productRepository = productRepository;
             _productServices = productServices;
         }
@@ -95,6 +98,11 @@ namespace CustomerManagement.Services
                     quantityOfItens: item.QuantityOfItens
                 );
 
+                if (!newItem.IsValid)
+                {
+                    return ServiceResult<Order>.ErrorResult("fields in item are invalid", 400);
+                }
+
                 listItens.Add(newItem);
             }
 
@@ -115,6 +123,66 @@ namespace CustomerManagement.Services
             _orderRepository.Add(order);
 
             return ServiceResult<Order>.SuccessResult(order, 201);
+        }
+
+        public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
+        {
+            List<Item> listItens = new List<Item>();
+
+            foreach (var order in listOrderDtoRequest)
+            {
+                var customerDto = new CustomerDto()
+                {
+                    FirstName = order.Customer.FirstName,
+                    LastName = order.Customer.LastName,
+                    Email = order.Customer.Email,
+                    DateOfBirth = order.Customer.DateOfBirth,
+                    Addresses = order.Customer.Addresses!
+                };
+                var newCustomer = _customerServices.GenerateListAddressForCustomerAndReturnCustomer(customer: customerDto);
+
+                var customer = _customerRepository.Add(entity: newCustomer);
+
+                _dbContext.SaveChanges();
+
+                foreach (var item in order.Itens)
+                {
+                    var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
+
+                    if (!newProduct.IsValid)
+                    {
+                        throw new Exception("Product is not valid");
+                    }
+
+                    _productRepository.Add(entity: newProduct);
+
+                     _dbContext.SaveChanges();
+
+                    var newItem = Item.RegisterNew(product: newProduct, unitValue: item.UnitValue, quantityOfItens: item.QuantityOfItens);
+
+                    if (!newItem.IsValid)
+                    {
+                        return ServiceResult<IEnumerable<Order>>.ErrorResult("fields in item are invalid", 400);
+                    }
+
+                    listItens.Add(newItem);
+                }
+
+                var newOrder = Order.RegisterNew
+                (
+                    number: order.Number,
+                    date: order.Date,
+                    customerId: customer.CustomerId,
+                    itens: listItens
+                );
+
+                _orderRepository.Add(entity: newOrder);
+                _dbContext.SaveChanges();
+            }
+
+            var i = new List<Order>();
+
+            return ServiceResult<IEnumerable<Order>>.SuccessResult(i);
         }
     
         public OrderDtoResponse GenerateOrderDtoResponse(Order order)
