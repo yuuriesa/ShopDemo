@@ -128,6 +128,7 @@ namespace CustomerManagement.Services
         public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
             List<Item> listItens = new List<Item>();
+            List<Order> listOrders = new List<Order>();
 
             foreach (var order in listOrderDtoRequest)
             {
@@ -140,7 +141,7 @@ namespace CustomerManagement.Services
 
                     if (!setProduct.IsValid)
                     {
-                        throw new Exception("Product is not valid");
+                        return ServiceResult<IEnumerable<Order>>.ErrorResult("Product is not valid", 400);
                     }
 
                     var newItem = Item.RegisterNew(product: setProduct, unitValue: item.UnitValue, quantityOfItens: item.QuantityOfItens);
@@ -162,9 +163,10 @@ namespace CustomerManagement.Services
                 );
 
                 _orderRepository.Add(entity: newOrder);
+                listOrders.Add(newOrder);
             }
 
-            return ServiceResult<IEnumerable<Order>>.SuccessResult(new List<Order>());
+            return ServiceResult<IEnumerable<Order>>.SuccessResult(listOrders);
         }
 
         public void CreateCustomerForOrderIfCustomerDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)

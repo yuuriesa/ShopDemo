@@ -106,17 +106,21 @@ namespace CustomerManagement.Controllers
             {
                 var result = _orderServices.AddBatchOrders(listOrderDtoRequests: listOrderDtoRequests);
                 
+                if (!result.Success)
+                {
+                    return StatusCode(statusCode: result.StatusCode, value: result.Message);
+                }
+
                 await _dbContext.SaveChangesAsync();
                 await transaction3.CommitAsync();
+
+                return Created("", result.Data);
             }
             catch (Exception err)
             {
                 await transaction3.RollbackAsync();
                 return StatusCode(500, err.Message);
             }
-
-
-            return Ok();
         }
     }
 }
