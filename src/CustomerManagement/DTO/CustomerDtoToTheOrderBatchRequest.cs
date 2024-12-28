@@ -15,7 +15,6 @@ namespace CustomerManagement.DTO
         public string Email { get; set; }
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
-        [Required(ErrorMessage = ResponseMessagesCustomers.AddressIsRequired)]
-        public ICollection<AddressDto>? Addresses { get; set; }
+        public ICollection<AddressDto>? Addresses { get; set; } = null;
     }
 }

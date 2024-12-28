@@ -54,6 +54,11 @@ namespace CustomerManagement.Controllers
             {
                 var getCustomer = _customerServices.GetByEmail(order.Customer.Email);
 
+                if (getCustomer is not null && order.Customer.Addresses is null)
+                {
+                    return StatusCode(400, "The past customer does not exist, to register a customer through the order add at least the address");
+                }
+
                 if (getCustomer is null)
                 {
                     var transaction1 = await _dbContext.Database.BeginTransactionAsync();
