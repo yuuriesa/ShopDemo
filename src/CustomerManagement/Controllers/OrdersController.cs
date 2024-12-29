@@ -127,7 +127,7 @@ namespace CustomerManagement.Controllers
                 await _dbContext.SaveChangesAsync();
                 await transaction2.CommitAsync();
 
-                return Created("", result.Data);
+                return Ok(result.Data);
             }
             catch (Exception err)
             {

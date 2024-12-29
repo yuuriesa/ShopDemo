@@ -221,7 +221,6 @@ namespace CustomerManagement.Services
 
         public void CreateProductForOrderIfProductDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
-            //var duplicateCodes = GetDuplicateCodesInOrders(listOrderDtoRequest);
             var codeAdded = new List<string>();
 
             foreach (var order in listOrderDtoRequest)
