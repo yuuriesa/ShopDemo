@@ -127,7 +127,6 @@ namespace CustomerManagement.Services
 
         public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
-            List<Item> listItens = new List<Item>();
             List<Order> listOrders = new List<Order>();
 
             foreach (var order in listOrderDtoRequest)
@@ -147,6 +146,8 @@ namespace CustomerManagement.Services
                 }
 
                 var customer = _customerServices.GetByEmail(order.Customer.Email);
+
+                List<Item> listItens = new List<Item>();
 
                 foreach (var item in order.Itens)
                 {
