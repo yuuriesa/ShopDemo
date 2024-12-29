@@ -55,6 +55,11 @@ namespace CustomerManagement.Controllers
         [HttpPost("batch")]
         public async Task<IActionResult> AddBatchOrders([FromBody] IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
         {
+            if (listOrderDtoRequests.Count() == 0)
+            {
+                return NoContent();
+            }
+
             foreach (var order in listOrderDtoRequests)
             {
                 var duplicateNumbers = _orderServices.GetDuplicateNumbersInOrders(listOrderDtoRequests: listOrderDtoRequests);
