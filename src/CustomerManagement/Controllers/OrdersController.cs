@@ -1,6 +1,8 @@
 using CustomerManagement.Data;
 using CustomerManagement.DTO;
+using CustomerManagement.Repository;
 using CustomerManagement.Services;
+using CustomerManagement.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,7 @@ namespace CustomerManagement.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IOrderServices _orderServices;
+        private readonly IOrderRepository _orderRepository;
         private readonly ICustomerServices _customerServices;
         private readonly IProductServices _productServices;
 
@@ -19,12 +22,14 @@ namespace CustomerManagement.Controllers
         (
             ApplicationDbContext dbContext,
             IOrderServices orderServices,
+            IOrderRepository orderRepository,
             ICustomerServices customerServices,
             IProductServices productServices
         )
         {
             _dbContext = dbContext;
             _orderServices = orderServices;
+            _orderRepository = orderRepository;
             _customerServices = customerServices;
             _productServices = productServices;
         }
@@ -52,55 +57,63 @@ namespace CustomerManagement.Controllers
         {
             foreach (var order in listOrderDtoRequests)
             {
-                var getCustomer = _customerServices.GetByEmail(order.Customer.Email);
+                var duplicateNumbers = _orderServices.GetDuplicateNumbersInOrders(listOrderDtoRequests: listOrderDtoRequests);
 
-                if (getCustomer is null && order.Customer.Addresses is null)
+                if (duplicateNumbers.Count > 0)
                 {
-                    return StatusCode(400, "The past customer does not exist, to register a customer through the order add at least the address");
+                    return StatusCode(value: "There are duplicate numbers in the orders", statusCode: 400);
                 }
 
-                if (getCustomer is null && order.Customer.Addresses!.Count > 0)
+                var numberExists = _orderRepository.GetOrderByNumber(number: order.Number);
+            
+                if (numberExists is true)
                 {
-                    var transaction1 = await _dbContext.Database.BeginTransactionAsync();
-                    //cenário 1 - adicionar o cliente se o cliente não existir, se não continua.
-                    try
-                    {
-                        _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
+                    return StatusCode(value: "This Order with this Number Exists", statusCode: 400);
+                } 
 
-                        await _dbContext.SaveChangesAsync();
-                        await transaction1.CommitAsync();
-                    }
-                    catch (Exception err)
-                    {
-                        await transaction1.RollbackAsync();
-                        return StatusCode(500, err.Message);
-                    }
-                }
+                var verifyIfDateIsNotValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: order.Date);
 
-                foreach (var item in order.Itens)
+                if (verifyIfDateIsNotValid)
                 {
-                    var getProduct = _productServices.GetByCode(item.Product.Code);
-                    if (getProduct is null)
-                    {
-                        var transaction2 = await _dbContext.Database.BeginTransactionAsync();
-                        //cenário 2 - adicionar o produto se o produto não existir
-                        try
-                        {
-                            _orderServices.CreateProductForOrderIfProductDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
-
-                            await _dbContext.SaveChangesAsync();
-                            await transaction2.CommitAsync();
-                        }
-                        catch (Exception err)
-                        {
-                            await transaction2.RollbackAsync();
-                            return StatusCode(500, err.Message);
-                        }
-                    }
+                    return StatusCode(value: ResponseMessagesCustomers.DateWithTheDayAfterToday, statusCode: 400);
                 }
             }
 
-            var transaction3 = await _dbContext.Database.BeginTransactionAsync();
+            foreach (var order in listOrderDtoRequests)
+            {
+                var transaction1 = await _dbContext.Database.BeginTransactionAsync();
+
+                try
+                {
+                    var getCustomer = _customerServices.GetByEmail(order.Customer.Email);
+
+                    if (getCustomer is null && order.Customer.Addresses is null)
+                    {
+                        return StatusCode(400, "The past customer does not exist, to register a customer through the order add at least the address");
+                    }
+
+                    if (getCustomer is null && order.Customer.Addresses!.Count > 0)
+                    {
+                        //cenário 1 - adicionar o cliente se o cliente não existir, se não continua.
+                        _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
+                    }
+
+                    
+                    //cenário 2 - adicionar o produto se o produto não existir
+                    _orderServices.CreateProductForOrderIfProductDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
+
+
+                    await _dbContext.SaveChangesAsync();
+                    await transaction1.CommitAsync();
+                }
+                catch (Exception err)
+                {
+                    await transaction1.RollbackAsync();
+                    return StatusCode(500, err.Message);
+                }
+            }
+
+            var transaction2 = await _dbContext.Database.BeginTransactionAsync();
             //cenário 3 - adicionar o pedido
             try
             {
@@ -112,13 +125,13 @@ namespace CustomerManagement.Controllers
                 }
 
                 await _dbContext.SaveChangesAsync();
-                await transaction3.CommitAsync();
+                await transaction2.CommitAsync();
 
                 return Created("", result.Data);
             }
             catch (Exception err)
             {
-                await transaction3.RollbackAsync();
+                await transaction2.RollbackAsync();
                 return StatusCode(500, err.Message);
             }
         }

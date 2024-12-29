@@ -221,10 +221,19 @@ namespace CustomerManagement.Services
 
         public void CreateProductForOrderIfProductDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
+            //var duplicateCodes = GetDuplicateCodesInOrders(listOrderDtoRequest);
+            var codeAdded = new List<string>();
+
             foreach (var order in listOrderDtoRequest)
             {
                 foreach (var item in order.Itens)
                     {
+                        var existingProduct = _productRepository.GetByCode(item.Product.Code);
+                        if (existingProduct is not null || codeAdded.Contains(item.Product.Code))
+                        {
+                            continue;
+                        }
+
                         var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
 
                         if (!newProduct.IsValid)
@@ -232,7 +241,11 @@ namespace CustomerManagement.Services
                             throw new Exception("Product is not valid");
                         }
 
-                        _productRepository.Add(entity: newProduct);
+                        if (!codeAdded.Contains(newProduct.Code))
+                        {
+                            _productRepository.Add(entity: newProduct);
+                            codeAdded.Add(newProduct.Code);
+                        }
                     }
             }
         }
@@ -266,6 +279,24 @@ namespace CustomerManagement.Services
 
             return newOrderDtoReponse;
 
+        }
+
+        public List<int> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
+        {
+            return listOrderDtoRequests
+            .GroupBy(c => c.Number)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToList();
+        }
+
+        public List<string> GetDuplicateCodesInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
+        {
+            return listOrderDtoRequests
+                .SelectMany(c => c.Itens)
+                .GroupBy(c => c.Product.Code)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key).ToList();
         }
 
     }

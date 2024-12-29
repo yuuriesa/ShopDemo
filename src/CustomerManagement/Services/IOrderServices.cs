@@ -11,5 +11,6 @@ namespace CustomerManagement.Services
         public void CreateCustomerForOrderIfCustomerDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest);
         public void CreateProductForOrderIfProductDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest);
         public OrderDtoResponse GenerateOrderDtoResponse(Order order);
+        public List<int> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
     }
 }
