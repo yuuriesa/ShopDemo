@@ -129,6 +129,23 @@ namespace CustomerManagement.Services
         {
             List<Order> listOrders = new List<Order>();
 
+            var listCustomerDto = from customer in listOrderDtoRequest
+                                select new CustomerDto()
+                                {
+                                    FirstName = customer.Customer.FirstName,
+                                    LastName = customer.Customer.LastName,
+                                    Email = customer.Customer.Email,
+                                    DateOfBirth = customer.Customer.DateOfBirth,
+                                    Addresses = customer.Customer.Addresses!
+                                };
+                                
+            var duplicateEmails = _customerServices.GetDuplicateEmails(listCustomerDto);
+
+            if (duplicateEmails.Count > 0)
+            {
+                throw new Exception(ResponseMessagesCustomers.DuplicateEmailFoundError);
+            }
+
             foreach (var order in listOrderDtoRequest)
             {
                 var numberExists = _orderRepository.GetOrderByNumber(number: order.Number);
@@ -152,6 +169,12 @@ namespace CustomerManagement.Services
                 foreach (var item in order.Itens)
                 {
                     var getProduct = _productServices.GetByCode(item.Product.Code);
+
+                    if (getProduct.Name != item.Product.Name)
+                    {
+                        return ServiceResult<IEnumerable<Order>>.ErrorResult(message: $"This product with this code: {item.Product.Code} has an invalid name", statusCode: 400);
+                    }
+
                     var setProduct = Product.SetExistingInfo(id: getProduct.Id, code: item.Product.Code, name: item.Product.Name);
 
                     if (!setProduct.IsValid)
@@ -186,6 +209,23 @@ namespace CustomerManagement.Services
 
         public void CreateCustomerForOrderIfCustomerDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
+            var listCustomerDto = from customer in listOrderDtoRequest
+                                select new CustomerDto()
+                                {
+                                    FirstName = customer.Customer.FirstName,
+                                    LastName = customer.Customer.LastName,
+                                    Email = customer.Customer.Email,
+                                    DateOfBirth = customer.Customer.DateOfBirth,
+                                    Addresses = customer.Customer.Addresses!
+                                };
+                                
+            var duplicateEmails = _customerServices.GetDuplicateEmails(listCustomerDto);
+
+            if (duplicateEmails.Count > 0)
+            {
+                throw new Exception(ResponseMessagesCustomers.DuplicateEmailFoundError);
+            }
+
             foreach (var order in listOrderDtoRequest)
             {
                 var customerDto = new CustomerDto()
@@ -204,7 +244,12 @@ namespace CustomerManagement.Services
 
                 var findCustomerByEmail = _customerServices.GetByEmail(customerDto.Email);
 
-                if (customerDto.Addresses.Count == 0) throw new Exception(ResponseMessagesCustomers.MinimumRegisteredAddressError);
+                if (findCustomerByEmail is not null)
+                {
+                    continue;
+                }
+
+                if (customerDto.Addresses.Count == 0 && findCustomerByEmail is null) throw new Exception(ResponseMessagesCustomers.MinimumRegisteredAddressError);
 
                 var checkIfTheCustomerHasARepeatingAddress = _customerServices.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
 
