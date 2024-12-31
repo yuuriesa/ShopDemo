@@ -55,20 +55,23 @@ namespace CustomerManagement.Controllers
         [HttpPost("batch")]
         public async Task<IActionResult> AddBatchOrders([FromBody] IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
         {
+            //Se não tiver nenhum pedido na lista, retorna sem conteúdo
             if (listOrderDtoRequests.Count() == 0)
             {
                 return NoContent();
             }
 
+            //Verifica se tem números duplicados
+            var duplicateNumbers = _orderServices.GetDuplicateNumbersInOrders(listOrderDtoRequests: listOrderDtoRequests);
+
+            if (duplicateNumbers.Count > 0)
+            {
+                return StatusCode(value: "There are duplicate numbers in the orders", statusCode: 400);
+            }
+
+            //Verifica se número do pedido já existe e se a data é maior que a data de hoje para cada pedido
             foreach (var order in listOrderDtoRequests)
             {
-                var duplicateNumbers = _orderServices.GetDuplicateNumbersInOrders(listOrderDtoRequests: listOrderDtoRequests);
-
-                if (duplicateNumbers.Count > 0)
-                {
-                    return StatusCode(value: "There are duplicate numbers in the orders", statusCode: 400);
-                }
-
                 var numberExists = _orderRepository.GetOrderByNumber(number: order.Number);
             
                 if (numberExists is true)
@@ -92,20 +95,20 @@ namespace CustomerManagement.Controllers
                 {
                     var getCustomer = _customerServices.GetByEmail(order.Customer.Email);
 
+                    //Se o cliente não existir e não tiver endereço, retorna erro
                     if (getCustomer is null && order.Customer.Addresses is null)
                     {
                         return StatusCode(400, "The past customer does not exist, to register a customer through the order add at least the address");
                     }
 
+                    //Se o cliente não existir e tiver endereço, cria o cliente
                     if (getCustomer is null && order.Customer.Addresses!.Count > 0)
                     {
-                        //cenário 1 - adicionar o cliente se o cliente não existir, se não continua.
-                        _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
+                        _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(orderDtoRequestBatch: order);
                     }
-
-                    
+          
                     //cenário 2 - adicionar o produto se o produto não existir
-                    _orderServices.CreateProductForOrderIfProductDoesNotExist(listOrderDtoRequest: listOrderDtoRequests);
+                    _orderServices.CreateProductForOrderIfProductDoesNotExist(orderDtoRequestBatch: order);
 
 
                     await _dbContext.SaveChangesAsync();

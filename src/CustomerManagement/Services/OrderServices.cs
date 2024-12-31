@@ -207,91 +207,81 @@ namespace CustomerManagement.Services
             return ServiceResult<IEnumerable<Order>>.SuccessResult(listOrders);
         }
 
-        public void CreateCustomerForOrderIfCustomerDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
+        public void CreateCustomerForOrderIfCustomerDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch)
+        {
+            var customerDto = new CustomerDto()
+            {
+                FirstName = orderDtoRequestBatch.Customer.FirstName,
+                LastName = orderDtoRequestBatch.Customer.LastName,
+                Email = orderDtoRequestBatch.Customer.Email,
+                DateOfBirth = orderDtoRequestBatch.Customer.DateOfBirth,
+                Addresses = orderDtoRequestBatch.Customer.Addresses!
+            };
+
+            // passo 2 - 
+            var dateIsValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: customerDto.DateOfBirth);
+
+            if (dateIsValid) throw new Exception(ResponseMessagesCustomers.DateOfBirthError);
+
+            var checkIfTheCustomerHasARepeatingAddress = _customerServices.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
+
+            if (checkIfTheCustomerHasARepeatingAddress)
+            {
+                throw new Exception(ResponseMessagesCustomers.DuplicateAddressExistsError);
+            }
+
+            var newCustomer = _customerServices.GenerateListAddressForCustomerAndReturnCustomer(customer: customerDto);
+
+            _customerRepository.Add(entity: newCustomer);
+        }
+
+        public void CheckForDuplicateEmail(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
             var listCustomerDto = from customer in listOrderDtoRequest
-                                select new CustomerDto()
-                                {
-                                    FirstName = customer.Customer.FirstName,
-                                    LastName = customer.Customer.LastName,
-                                    Email = customer.Customer.Email,
-                                    DateOfBirth = customer.Customer.DateOfBirth,
-                                    Addresses = customer.Customer.Addresses!
-                                };
-                                
+                                  select new CustomerDto()
+                                  {
+                                      FirstName = customer.Customer.FirstName,
+                                      LastName = customer.Customer.LastName,
+                                      Email = customer.Customer.Email,
+                                      DateOfBirth = customer.Customer.DateOfBirth,
+                                      Addresses = customer.Customer.Addresses!
+                                  };
+
             var duplicateEmails = _customerServices.GetDuplicateEmails(listCustomerDto);
 
             if (duplicateEmails.Count > 0)
             {
                 throw new Exception(ResponseMessagesCustomers.DuplicateEmailFoundError);
             }
-
-            foreach (var order in listOrderDtoRequest)
-            {
-                var customerDto = new CustomerDto()
-                {
-                    FirstName = order.Customer.FirstName,
-                    LastName = order.Customer.LastName,
-                    Email = order.Customer.Email,
-                    DateOfBirth = order.Customer.DateOfBirth,
-                    Addresses = order.Customer.Addresses!
-                };
-
-                // passo 2 - 
-                 var dateIsValid = DateVerify.CheckIfTheDateIsGreaterThanToday(datetime: customerDto.DateOfBirth);
-
-                if (dateIsValid) throw new Exception(ResponseMessagesCustomers.DateOfBirthError);
-
-                var findCustomerByEmail = _customerServices.GetByEmail(customerDto.Email);
-
-                if (findCustomerByEmail is not null)
-                {
-                    continue;
-                }
-
-                if (customerDto.Addresses.Count == 0 && findCustomerByEmail is null) throw new Exception(ResponseMessagesCustomers.MinimumRegisteredAddressError);
-
-                var checkIfTheCustomerHasARepeatingAddress = _customerServices.CheckIfTheCustomerHasARepeatingAddressInList(customerDto.Addresses);
-
-                if (checkIfTheCustomerHasARepeatingAddress)
-                {
-                    throw new Exception(ResponseMessagesCustomers.DuplicateAddressExistsError);
-                }
-
-                var newCustomer = _customerServices.GenerateListAddressForCustomerAndReturnCustomer(customer: customerDto);
-
-                _customerRepository.Add(entity: newCustomer);
-            }
         }
 
-        public void CreateProductForOrderIfProductDoesNotExist(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
+        public void CreateProductForOrderIfProductDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch)
         {
             var codeAdded = new List<string>();
 
-            foreach (var order in listOrderDtoRequest)
-            {
-                foreach (var item in order.Itens)
+            foreach (var item in orderDtoRequestBatch.Itens)
+                {
+                    var existingProduct = _productRepository.GetByCode(item.Product.Code);
+
+                    //Se o produto já existir, ou se o código já foi adicionado na lista, continua
+                    if (existingProduct is not null || codeAdded.Contains(item.Product.Code))
                     {
-                        var existingProduct = _productRepository.GetByCode(item.Product.Code);
-                        if (existingProduct is not null || codeAdded.Contains(item.Product.Code))
-                        {
-                            continue;
-                        }
-
-                        var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
-
-                        if (!newProduct.IsValid)
-                        {
-                            throw new Exception("Product is not valid");
-                        }
-
-                        if (!codeAdded.Contains(newProduct.Code))
-                        {
-                            _productRepository.Add(entity: newProduct);
-                            codeAdded.Add(newProduct.Code);
-                        }
+                        continue;
                     }
-            }
+
+                    var newProduct = Product.RegisterNew(code: item.Product.Code, name: item.Product.Name);
+
+                    if (!newProduct.IsValid)
+                    {
+                        throw new Exception("Product is not valid");
+                    }
+
+                    if (!codeAdded.Contains(newProduct.Code))
+                    {
+                        _productRepository.Add(entity: newProduct);
+                        codeAdded.Add(newProduct.Code);
+                    }
+                }
         }
     
         public OrderDtoResponse GenerateOrderDtoResponse(Order order)
