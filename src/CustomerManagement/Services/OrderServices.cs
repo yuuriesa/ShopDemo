@@ -235,6 +235,20 @@ namespace CustomerManagement.Services
             _customerRepository.Add(entity: newCustomer);
         }
 
+        public void CreateNewAddressForCustomerIfAddressDoesNotExist(IEnumerable<AddressDto> addresses, string email)
+        {
+            var findCustomer = _customerServices.GetByEmail(email: email);
+
+            foreach (var address in addresses)
+            {
+                var result = _customerServices.AddAddressInCustomer(id: findCustomer.CustomerId, addressDto: address);
+                if (!result.Success)
+                {
+                    throw new Exception(result.Message);
+                }
+            }
+        }
+
         public void CheckForDuplicateEmail(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest)
         {
             var listCustomerDto = from customer in listOrderDtoRequest

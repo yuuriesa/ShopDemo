@@ -106,6 +106,11 @@ namespace CustomerManagement.Controllers
                     {
                         _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(orderDtoRequestBatch: order);
                     }
+
+                    if (getCustomer is not null && order.Customer.Addresses.Count > 0)
+                    {
+                        _orderServices.CreateNewAddressForCustomerIfAddressDoesNotExist(addresses: order.Customer.Addresses, email: order.Customer.Email);
+                    }
           
                     //cenário 2 - adicionar o produto se o produto não existir
                     _orderServices.CreateProductForOrderIfProductDoesNotExist(orderDtoRequestBatch: order);

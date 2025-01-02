@@ -9,6 +9,7 @@ namespace CustomerManagement.Services
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest);
         public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
         public void CreateCustomerForOrderIfCustomerDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch);
+        public void CreateNewAddressForCustomerIfAddressDoesNotExist(IEnumerable<AddressDto> addresses, string email);
         public void CreateProductForOrderIfProductDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch);
         public OrderDtoResponse GenerateOrderDtoResponse(Order order);
         public List<int> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
