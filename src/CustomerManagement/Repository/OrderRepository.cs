@@ -13,7 +13,7 @@ namespace CustomerManagement.Repository
             _dbContext = context;
         }
 
-        public bool GetOrderByNumber(int number)
+        public bool GetOrderByNumber(string number)
         {
             var numberExists = _dbContext.Orders.ToList().FirstOrDefault(o => o.Number == number);
             

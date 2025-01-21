@@ -6,7 +6,7 @@ namespace CustomerManagement.DTO
 {
     public class OrderDtoRequest
     {
-        public int Number { get; set; } //o pedido deve ter um número
+        public string Number { get; set; } //o pedido deve ter um número
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } //data
         public CustomerDtoToTheOrderRequest Customer { get; set; } //qual cliente fez o pedido

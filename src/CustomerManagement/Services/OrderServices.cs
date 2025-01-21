@@ -329,7 +329,7 @@ namespace CustomerManagement.Services
 
         }
 
-        public List<int> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
+        public List<string> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests)
         {
             return listOrderDtoRequests
             .GroupBy(c => c.Number)

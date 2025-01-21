@@ -12,7 +12,7 @@ namespace CustomerManagement.Services
         public void CreateNewAddressForCustomerIfAddressDoesNotExist(IEnumerable<AddressDto> addresses, string email);
         public void CreateProductForOrderIfProductDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch);
         public OrderDtoResponse GenerateOrderDtoResponse(Order order);
-        public List<int> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
+        public List<string> GetDuplicateNumbersInOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
         public void CheckForDuplicateEmail(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequest);
     }
 }

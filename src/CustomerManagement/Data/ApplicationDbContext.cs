@@ -112,9 +112,12 @@ namespace CustomerManagement.Data
                 {
                     entity.HasKey(o => o.OrderId);
 
-                    entity.Property<int>("_number")
+                    entity.Property<string>("_number")
                     .HasColumnName("Number")
                     .IsRequired();
+
+                    entity.HasIndex("_number")
+                    .IsUnique();
 
                     entity.Property<DateTime>("_date")
                     .IsRequired()

@@ -6,11 +6,11 @@ namespace CustomerManagement.Models
     public class Order
     {
         public int OrderId { get; private set; }
-        private int _number { get; set; }
+        private string _number { get; set; }
         private DateTime _date { get; set; }
         private decimal _totalOrderValue;
         private int _customerId;
-        public int Number => _number; //o pedido deve ter um número
+        public string Number => _number; //o pedido deve ter um número
         public DateTime Date => _date; //data
         public int CustomerId => _customerId;
         [JsonIgnore]
@@ -27,7 +27,7 @@ namespace CustomerManagement.Models
         (
             int orderId,
             int customerId,
-            int number,
+            string number,
             DateTime date,
             List<Item> itens,
             decimal totalOrderValue
@@ -44,7 +44,7 @@ namespace CustomerManagement.Models
         //public methods
         public static Order RegisterNew
         (
-            int number,
+            string number,
             DateTime date,
             int customerId,
             List<Item> itens
@@ -65,7 +65,7 @@ namespace CustomerManagement.Models
         (
             int orderId,
             int customerId,
-            int number,
+            string number,
             DateTime date,
             List<Item> itens,
             decimal totalOrderValue
@@ -86,11 +86,11 @@ namespace CustomerManagement.Models
         }
 
         // private methods
-        private void SetNumber(int number)
+        private void SetNumber(string number)
         {
-            if (number < 1)
+            if (number.Length < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(number), ResponseMessagesCustomers.NumberGreaterThanZero);
+                throw new ArgumentOutOfRangeException(nameof(number), "The length of the number cannot be less than 1 characters.");
             }
 
             _number = number;
@@ -136,7 +136,7 @@ namespace CustomerManagement.Models
         private void Validate()
         {
             var dateNow = DateTime.UtcNow;
-            IsValid = _number > 0 && _date.ToUniversalTime().Date <= dateNow.Date && _totalOrderValue > 0 && _customerId > 0 && Itens.Count > 0;
+            IsValid = _number.Length >= 1 && _date.ToUniversalTime().Date <= dateNow.Date && _totalOrderValue > 0 && _customerId > 0 && Itens.Count > 0;
         }
     }
 }
