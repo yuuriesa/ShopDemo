@@ -140,7 +140,39 @@ namespace CustomerManagement.Controllers
                 await _dbContext.SaveChangesAsync();
                 await transaction2.CommitAsync();
 
-                return Ok(result.Data);
+                List<OrderDtoResponse> listOrdersReponse = new List<OrderDtoResponse>();
+
+                foreach (var order in result.Data)
+                {
+                    List<ItemDtoResponse> listItemResponse = new List<ItemDtoResponse>();
+                    foreach (var item in order.Itens)
+                    {
+                        var findProduct = _productServices.GetById(id: item.ProductId);
+                        
+                        var itemResponse = new ItemDtoResponse
+                        {
+                            Product = findProduct,
+                            QuantityOfItens = item.QuantityOfItens,
+                            UnitValue = item.UnitValue
+                        };
+
+                        listItemResponse.Add(item: itemResponse);
+                    }
+
+                    var newOrderReponse = new OrderDtoResponse
+                    {
+                        OrderId = order.OrderId,
+                        Number = order.Number,
+                        Date = order.Date,
+                        CustomerId = order.CustomerId,
+                        Itens = listItemResponse,
+                        TotalOrderValue = order.TotalOrderValue
+                    };
+
+                    listOrdersReponse.Add(item: newOrderReponse);
+                }
+
+                return Ok(listOrdersReponse);
             }
             catch (Exception err)
             {

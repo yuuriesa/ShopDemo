@@ -4,6 +4,7 @@ namespace CustomerManagement.DTO
 {
     public class OrderDtoResponse
     {
+        public int OrderId { get; set; }
         public int Number { get; set; } //o pedido deve ter um número
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } //data
