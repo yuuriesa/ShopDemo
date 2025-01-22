@@ -304,6 +304,7 @@ namespace CustomerManagement.Services
 
             var newOrderDtoReponse = new OrderDtoResponse();
 
+            newOrderDtoReponse.OrderId = order.OrderId;
             newOrderDtoReponse.Number = order.Number;
             newOrderDtoReponse.Date = order.Date;
             newOrderDtoReponse.CustomerId = order.CustomerId;

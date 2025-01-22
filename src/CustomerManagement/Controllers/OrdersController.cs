@@ -49,7 +49,7 @@ namespace CustomerManagement.Controllers
 
             var orderReponse = _orderServices.GenerateOrderDtoResponse(order: result.Data);
 
-            return CreatedAtAction(nameof(Add), new { OrderId = result.Data.OrderId} , value: orderReponse);
+            return CreatedAtAction(nameof(Add), new { id = result.Data.OrderId} , value: orderReponse);
         }
 
         [HttpPost("batch")]
