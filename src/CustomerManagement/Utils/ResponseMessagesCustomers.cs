@@ -38,6 +38,8 @@ namespace CustomerManagement.Utils
         public const string DuplicateCodesInInputBatchProduct = "Duplicate Code(s) found in input";
 
         //Order Messages
+        public const string OrderNotFoundMessage = "Order not found";
+
         public const string NumberGreaterThanZero = "number must be greater than zero";
         public const string OrderDateError = "You cannot put the date with the day after today.";
         public const string OrderMustHaveAtLeastOneItem = "The order must have at least one item.";

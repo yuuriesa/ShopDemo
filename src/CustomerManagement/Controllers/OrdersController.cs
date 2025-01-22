@@ -35,6 +35,19 @@ namespace CustomerManagement.Controllers
         }
 
 
+        [HttpGet("{id}")]
+        public ActionResult GetById(int id)
+        {
+            var getOrderById = _orderServices.GetById(id: id);
+
+            if (getOrderById == null)
+            {
+                return NotFound(ResponseMessagesCustomers.OrderNotFoundMessage);
+            }
+
+            return Ok(getOrderById);
+        }
+
         [HttpPost]
         public ActionResult Add([FromBody] OrderDtoRequest orderDtoRequest)
         {
@@ -49,7 +62,7 @@ namespace CustomerManagement.Controllers
 
             var orderReponse = _orderServices.GenerateOrderDtoResponse(order: result.Data);
 
-            return CreatedAtAction(nameof(Add), new { id = result.Data.OrderId} , value: orderReponse);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data.OrderId} , value: orderReponse);
         }
 
         [HttpPost("batch")]

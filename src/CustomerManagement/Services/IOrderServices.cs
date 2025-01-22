@@ -6,6 +6,7 @@ namespace CustomerManagement.Services
 {
     public interface IOrderServices
     {
+        public Order GetById(int id);
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest);
         public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);
         public void CreateCustomerForOrderIfCustomerDoesNotExist(OrderDtoRequestBatch orderDtoRequestBatch);

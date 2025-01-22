@@ -35,6 +35,8 @@ namespace CustomerManagement.Services
             _productServices = productServices;
         }
 
+        
+
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest)
         {
             var numberExists = _orderRepository.GetOrderByNumber(number: orderDtoRequest.Number);
@@ -348,5 +350,16 @@ namespace CustomerManagement.Services
                 .Select(group => group.Key).ToList();
         }
 
+        public Order GetById(int id)
+        {
+            var findOrder = _orderRepository.GetById(id: id);
+
+            if (findOrder == null)
+            {
+                return null!;
+            }
+
+            return findOrder;
+        }
     }
 }
