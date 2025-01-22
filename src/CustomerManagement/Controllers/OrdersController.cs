@@ -45,7 +45,9 @@ namespace CustomerManagement.Controllers
                 return NotFound(ResponseMessagesCustomers.OrderNotFoundMessage);
             }
 
-            return Ok(getOrderById);
+            var newOrderReponse = _orderServices.GenerateOrderDtoResponse(order: getOrderById);
+
+            return Ok(newOrderReponse);
         }
 
         [HttpPost]

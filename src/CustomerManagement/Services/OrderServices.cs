@@ -352,7 +352,7 @@ namespace CustomerManagement.Services
 
         public Order GetById(int id)
         {
-            var findOrder = _orderRepository.GetById(id: id);
+            var findOrder = _dbContext.Orders.Where(o => o.OrderId == id).Include(o => o.Itens).First();
 
             if (findOrder == null)
             {
