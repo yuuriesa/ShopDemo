@@ -363,5 +363,15 @@ namespace CustomerManagement.Services
 
             return findOrder;
         }
+
+        public IEnumerable<Order> GetAll(PaginationFilter paginationFilter)
+        {
+            var orders = _dbContext.Orders
+                .Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                .Take(paginationFilter.PageSize).Include(o => o.Itens)
+                .ToList();
+
+            return orders;
+        }
     }
 }

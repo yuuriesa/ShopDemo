@@ -6,6 +6,7 @@ namespace CustomerManagement.Services
 {
     public interface IOrderServices
     {
+        public IEnumerable<Order> GetAll(PaginationFilter paginationFilter);
         public Order GetById(int id);
         public ServiceResult<Order> Add(OrderDtoRequest orderDtoRequest);
         public ServiceResult<IEnumerable<Order>> AddBatchOrders(IEnumerable<OrderDtoRequestBatch> listOrderDtoRequests);

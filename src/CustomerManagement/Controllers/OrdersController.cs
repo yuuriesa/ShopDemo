@@ -1,5 +1,6 @@
 using CustomerManagement.Data;
 using CustomerManagement.DTO;
+using CustomerManagement.Models;
 using CustomerManagement.Repository;
 using CustomerManagement.Services;
 using CustomerManagement.Utils;
@@ -32,6 +33,30 @@ namespace CustomerManagement.Controllers
             _orderRepository = orderRepository;
             _customerServices = customerServices;
             _productServices = productServices;
+        }
+
+        [HttpGet]
+        public ActionResult GetAll(int pageNumber = 1, int pageSize = 10)
+        {
+            var paginationFilter = new PaginationFilter(pageNumber: pageNumber, pageSize: pageSize);
+
+            var allOrders = _orderServices.GetAll(paginationFilter: paginationFilter);
+
+            if (allOrders.Count() == 0)
+            {
+                return NoContent();
+            }
+
+            List<OrderDtoResponse> listOrdersResponse = new List<OrderDtoResponse>();
+
+            foreach (var order in allOrders)
+            {
+                var orderReponse = _orderServices.GenerateOrderDtoResponse(order: order);
+
+                listOrdersResponse.Add(item: orderReponse);
+            }
+
+            return Ok(listOrdersResponse.ToList());
         }
 
 
