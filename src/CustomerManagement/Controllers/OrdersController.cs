@@ -147,6 +147,7 @@ namespace CustomerManagement.Controllers
                         _orderServices.CreateCustomerForOrderIfCustomerDoesNotExist(orderDtoRequestBatch: order);
                     }
 
+                    //Se o cliente existir e for incluído um endereço que não existe, ele adiciona o enddereço novo!
                     if (getCustomer is not null && order.Customer.Addresses.Count > 0)
                     {
                         _orderServices.CreateNewAddressForCustomerIfAddressDoesNotExist(addresses: order.Customer.Addresses, email: order.Customer.Email);
