@@ -1,8 +1,8 @@
-# CustomerManagement
+# ShopDemo
 
 ## Descrição:
 
-O **CustomerManagement** é um sistema para gerenciar clientes, produtos e pedidos. Ele oferece funcionalidades para buscar clientes com paginação, visualizar informações de um cliente específico, adicionar novos clientes, atualizar registros de clientes, realizar importação em lote de clientes, deletar clientes e gerenciar endereços associados. Cada endpoint possui validações robustas para garantir a integridade dos dados e evitar erros no sistema.
+O **ShopDemo** é um sistema para gerenciar clientes, produtos e pedidos. Ele oferece funcionalidades para buscar clientes com paginação, visualizar informações de um cliente específico, adicionar novos clientes, atualizar registros de clientes, realizar importação em lote de clientes, deletar clientes e gerenciar endereços associados. Cada endpoint possui validações robustas para garantir a integridade dos dados e evitar erros no sistema.
 
 ---
 
