@@ -42,8 +42,8 @@ O **ShopDemo** é um sistema para gerenciar clientes, produtos e pedidos. Ele of
 1. Clone este repositório:
 
    ```bash
-   git clone https://github.com/yurisalgado21/CustomerManagement.git
-   cd CustomerManagement
+   git clone https://github.com/yurisalgado21/ShopDemo.git
+   cd ShopDemo
    ```
 
 2. Configure o ambiente com o Docker Compose:
